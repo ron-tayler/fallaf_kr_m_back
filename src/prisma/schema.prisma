@@ -1,0 +1,48 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "./generated/client"
+}
+
+datasource db {
+  provider          = "mysql"
+  url               = env("DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+}
+
+model Instructor {
+  id                Int                 @id @default(autoincrement())
+  name              String              @db.VarChar(255)
+  price             Float
+  File              File[]
+  InstructorHistory InstructorHistory[]
+}
+
+model File {
+  id   Int    @id @default(autoincrement())
+  name String @db.VarChar(255)
+
+  instructor   Instructor @relation(fields: [instructorId], references: [id])
+  date         DateTime
+  fallaf_price Float
+  dev_price    Float
+  instructorId Int
+}
+
+model InstructorHistory {
+  id           Int        @id @default(autoincrement())
+  instructor   Instructor @relation(fields: [instructorId], references: [id])
+  date         DateTime
+  sum          Float
+  instructorId Int
+}
+
+model DevHistory {
+  id   Int      @id @default(autoincrement())
+  date DateTime
+  sum  Float
+}
+
+model Dev {
+  id    Int   @id @default(autoincrement())
+  price Float
+}
