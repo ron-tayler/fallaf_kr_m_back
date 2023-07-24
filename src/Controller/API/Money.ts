@@ -8,7 +8,7 @@ import {
     BaseHttpController, requestParam,
     requestBody
 } from "inversify-express-utils";
-import {PrismaClient} from "@/prisma/generated/client"
+import {PrismaClient} from "@/../prisma/generated/client"
 import {inject} from "inversify";
 import {Request, Response} from "express";
 import * as io_ts from "io-ts";
@@ -54,21 +54,25 @@ export class Controller_API_Money extends BaseHttpController {
     @httpPut("/instructor/:id/addMoney")
     addMoneyByInstructor(@requestParam("id") id: number, @request() req: Request, @response() res: Response){
         id = Number(id)
-        const money_raw = io_ts.number.decode(req.body.money)
-        if(money_raw._tag=="Left"){
+        const money_raw = parseFloat(req.body.money)
+        if(isNaN(money_raw) || money_raw <=0){
             res.status(400).end("error money")
+            return;
+        }
+        if(isNaN(id) || id <=0){
+            res.status(400).end("error id")
             return;
         }
 
         const p1 = this.prisma.instructor.update({
             where:{id},
             data:{price:{
-                decrement: money_raw.right
+                decrement: money_raw
             }}
         })
         const p2 = this.prisma.instructorHistory.create({
             data: {
-                sum: money_raw.right,
+                sum: money_raw,
                 date: new Date(),
                 instructor: {
                     connect: {id}
@@ -80,11 +84,23 @@ export class Controller_API_Money extends BaseHttpController {
 
     @httpGet("/files")
     getFiles(){
-        return this.prisma.file.findMany()
+        return this.prisma.file.findMany().then(files=>{
+            return files.map(file=>{
+                return {
+                    id: file.id,
+                    name: file.name,
+                    instructor_id: file.instructorId,
+                    fallaf_price: file.fallaf_price,
+                    dev_price: file.dev_price,
+                    date: file.date
+                }
+            })
+        })
     }
 
     @httpPut("/file")
     addFile(@requestBody() body: any, @response() res: Response){
+        body.date = new Date(body.date ?? "");
         const body_io = io_ts.type({
             name: io_ts.string,
             instructor_id: io_ts.number,
@@ -133,18 +149,39 @@ export class Controller_API_Money extends BaseHttpController {
 
     @httpDelete("/file/:id")
     removeFile(@requestParam("id") id: number){
-        return this.prisma.file.delete({
+        return this.prisma.file.findUnique({
             where:{id: Number(id)}
-        }).then(()=>{
-            return this.ok()
-        }).catch(()=>{
-            return this.internalServerError()
-        })
+        }).then(file=>file?file:Promise.reject("not_found"))
+            .then(file=>this.prisma.instructor.update({
+                where:{id: file.instructorId},
+                data:{
+                    price:{
+                        decrement: file.fallaf_price
+                    }
+                }
+            }))
+            .then(()=>this.prisma.file.delete({
+                where:{id: Number(id)}
+            }))
+            .then(()=>{
+                return this.ok()
+            }).catch(()=>{
+                return this.internalServerError()
+            })
     }
 
     @httpGet("/instructors/history")
     getInstructorsMoneyHistory(){
-        return this.prisma.instructorHistory.findMany()
+        return this.prisma.instructorHistory.findMany().then(arr=>{
+            return arr.map(el=>{
+                return {
+                    id: el.id,
+                    date: el.date,
+                    sum: el.sum,
+                    inst_id: el.instructorId
+                }
+            })
+        })
     }
 
     @httpPut("/dev/money")
@@ -158,12 +195,20 @@ export class Controller_API_Money extends BaseHttpController {
         }
         const body_data = body_io.right
 
-        this.prisma.dev.update({
+        const p1 = this.prisma.dev.update({
             where:{id:1},
             data:{
                 price:{ decrement: body_data.money }
             }
         })
+        const p2 = this.prisma.devHistory.create({
+            data:{
+                sum: body_data.money,
+                date: new Date()
+            }
+        })
+
+        return Promise.all([p1,p2]).then(()=>this.ok())
     }
 
     @httpGet("/dev/history")

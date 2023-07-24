@@ -8,11 +8,13 @@ import session from "express-session"
 import bodyParser from 'body-parser';
 import console from "console";
 import * as process from "process";
+import * as path from "path";
+import express from "express";
 
 import {Container} from "inversify"
 import {InversifyExpressServer} from 'inversify-express-utils';
 import {buildProviderModule} from "inversify-binding-decorators";
-import {PrismaClient} from "@/prisma/generated/client"
+import {PrismaClient} from "@/../prisma/generated/client"
 
 import "@/Controller/API/Money";
 
@@ -44,6 +46,7 @@ server.setConfig(app=>{
     }))
     app.use(bodyParser.urlencoded({extended: true}));
     app.use(bodyParser.json());
+    app.use(express.static(path.join(__dirname, '../front')))
 })
 
 let app = server.build();

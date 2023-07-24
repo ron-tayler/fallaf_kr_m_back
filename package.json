@@ -2,7 +2,7 @@
   "name": "fallaf_kr_m_back",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "src/main.ts",
   "scripts": {
     "start:js": "node dist/main.js",
     "start:ts": "ts-node src/main.ts",
@@ -11,7 +11,7 @@
     "build:clean": "rimraf ./dist",
     "start:prod": "npm run start:js",
     "prisma:pull": "prisma db pull --schema src/prisma/schema.prisma",
-    "prisma:push": "prisma db push  --schema src/prisma/schema.prisma",
+    "prisma:push": "prisma db push  --schema src/prisma/schema.prisma --skip-generate",
     "prisma:gen": "prisma generate  --schema src/prisma/schema.prisma",
     "prisma:format": "prisma format  --schema src/prisma/schema.prisma",
     "prisma:migrate": "prisma migrate deploy  --schema src/prisma/schema.prisma",
