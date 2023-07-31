@@ -187,14 +187,27 @@ export class Controller_API_Money extends BaseHttpController {
         return this.prisma.file.findUnique({
             where:{id: Number(id)}
         }).then(file=>file?file:Promise.reject("not_found"))
-            .then(file=>this.prisma.instructor.update({
-                where:{id: file.instructorId},
-                data:{
-                    price:{
-                        decrement: file.fallaf_price
-                    }
-                }
-            }))
+            .then(file=> {
+                return this.prisma.$transaction([
+                    this.prisma.instructor.update({
+                        where: {id: file.instructorId},
+                        data: {
+                            price: {
+                                decrement: file.fallaf_price
+                            }
+                        }
+                    }),
+                    this.prisma.dev.update({
+                        where:{id: 1},
+                        data:{
+                            price:{
+                                decrement: file.dev_price
+                            }
+                        }
+                    })
+                ])
+
+            })
             .then(()=>this.prisma.file.delete({
                 where:{id: Number(id)}
             }))
