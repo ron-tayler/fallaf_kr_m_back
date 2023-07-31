@@ -51,6 +51,13 @@ server.setConfig(app=>{
 
 let app = server.build();
 
+app.get("/api/*",(req,res)=>{
+    res.status(404).end("not_found")
+})
+app.get("*",(req,res)=>{
+    res.sendFile(path.join(__dirname, '../front/index.html'))
+})
+
 app.listen(server_port,()=>{
     console.log("Start listening on port "+server_port)
 })

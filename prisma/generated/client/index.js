@@ -68,8 +68,8 @@ const regularDirname = hasDirname && fs.existsSync(path.join(__dirname, 'schema.
 
 // if the client has been bundled, we need to look for the folders
 const foundDirname = !regularDirname && findSync(process.cwd(), [
-    "src\\prisma\\generated\\client",
     "prisma\\generated\\client",
+    "generated\\client",
 ], ['d'], ['d'], 1)[0]
 
 const dirname = regularDirname || foundDirname || __dirname
@@ -142,10 +142,11 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "C:\\dev\\fallaf_kr_m_back\\src\\prisma\\generated\\client",
+      "value": "C:\\dev\\fallaf_kr_m_back\\prisma\\generated\\client",
       "fromEnvVar": null
     },
     "config": {
+      "interactiveTransactions": "true",
       "engineType": "library"
     },
     "binaryTargets": [],
@@ -153,7 +154,8 @@ const config = {
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
-    "rootEnvPath": null
+    "rootEnvPath": "..\\..\\..\\.env",
+    "schemaEnvPath": "..\\..\\..\\.env"
   },
   "relativePath": "..\\..",
   "clientVersion": "3.15.2",
@@ -181,6 +183,6 @@ exports.PrismaClient = PrismaClient
 Object.assign(exports, Prisma)
 
 path.join(__dirname, "query_engine-windows.dll.node");
-path.join(process.cwd(), "src\\prisma\\generated\\client\\query_engine-windows.dll.node")
+path.join(process.cwd(), "prisma\\generated\\client\\query_engine-windows.dll.node")
 path.join(__dirname, "schema.prisma");
-path.join(process.cwd(), "src\\prisma\\generated\\client\\schema.prisma")
+path.join(process.cwd(), "prisma\\generated\\client\\schema.prisma")

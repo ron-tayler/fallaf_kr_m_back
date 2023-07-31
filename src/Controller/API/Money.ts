@@ -83,23 +83,49 @@ export class Controller_API_Money extends BaseHttpController {
     }
 
     @httpGet("/files")
-    getFiles(){
-        return this.prisma.file.findMany().then(files=>{
-            return files.map(file=>{
-                return {
-                    id: file.id,
-                    name: file.name,
-                    instructor_id: file.instructorId,
-                    fallaf_price: file.fallaf_price,
-                    dev_price: file.dev_price,
-                    date: file.date
-                }
-            })
+    async getFiles(){
+
+        const instructors = await this.prisma.instructor.findMany({
+            select:{
+                id: true,
+                price: true,
+                name: true,
+                File: true
+            }
         })
+
+        const files: any[] = []
+
+        instructors.forEach(inst=>{
+            let inst_balance = inst.price
+            const inst_files = inst.File.sort((a,b)=>b.id-a.id)
+                .map(file=>{
+                    let c = inst_balance - file.fallaf_price
+                    let file_balance = 0
+                    if(inst_balance < 0){
+                        file_balance = file.fallaf_price
+                    } else if(c < 0){
+                        file_balance = c * -1
+                    }
+                    inst_balance = c
+                    return {
+                        id: file.id,
+                        name: file.name,
+                        instructor_id: file.instructorId,
+                        fallaf_price: file.fallaf_price,
+                        dev_price: file.dev_price,
+                        date: file.date,
+                        balance: file_balance
+                    }
+                })
+            files.push(...inst_files)
+        })
+
+        return files
     }
 
     @httpPut("/file")
-    addFile(@requestBody() body: any, @response() res: Response){
+    async addFile(@requestBody() body: any, @response() res: Response){
         body.date = new Date(body.date ?? "");
         const body_io = io_ts.type({
             name: io_ts.string,
@@ -113,6 +139,15 @@ export class Controller_API_Money extends BaseHttpController {
             return;
         }
         const file_data = body_io.right
+
+        const instructor = await this.prisma.instructor.findUnique({
+            where:{id: file_data.instructor_id}
+        })
+
+        if(!instructor){
+            res.status(400).end("not found instructor")
+            return
+        }
 
         const p1 = this.prisma.file.create({
             data:{
@@ -144,7 +179,7 @@ export class Controller_API_Money extends BaseHttpController {
             }
         })
 
-        return Promise.all([p1,p2,p3])
+        return this.prisma.$transaction([p1,p2,p3])
     }
 
     @httpDelete("/file/:id")
