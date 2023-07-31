@@ -146,7 +146,6 @@ const config = {
       "fromEnvVar": null
     },
     "config": {
-      "interactiveTransactions": "true",
       "engineType": "library"
     },
     "binaryTargets": [],
