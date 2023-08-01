@@ -6,7 +6,7 @@ import {
     request,
     response,
     BaseHttpController, requestParam,
-    requestBody
+    requestBody, httpPost
 } from "inversify-express-utils";
 import {PrismaClient} from "@/../prisma/generated/client"
 import {inject} from "inversify";
@@ -215,6 +215,66 @@ export class Controller_API_Money extends BaseHttpController {
                 return this.ok()
             }).catch(()=>{
                 return this.internalServerError()
+            })
+    }
+
+    @httpPost("/file/:id/edit_fallaf_price")
+    editFileFallafPrice(
+        @requestParam("id") id: number,
+        @request() req: Request,
+        @response() res: Response
+    ){
+        const price_raw = io_ts.number.decode(Number(req.body.price))
+        if(price_raw._tag == "Left"){
+            return res.status(400).end("error price")
+        }
+        const fallaf_price = price_raw.right
+        return this.prisma.file.findUnique({
+            where:{id: Number(id)}
+        }).then(file=>file?file:Promise.reject("not_found"))
+            .then(file=>{
+                return this.prisma.$transaction([
+                    this.prisma.instructor.update({
+                        where:{id:file.instructorId},
+                        data:{price:{
+                                decrement: file.fallaf_price - fallaf_price
+                            }}
+                    }),
+                    this.prisma.file.update({
+                        where:{id:  file.id},
+                        data:{fallaf_price}
+                    })
+                ])
+            })
+    }
+
+    @httpPost("/file/:id/edit_dev_price")
+    editFileDevPrice(
+        @requestParam("id") id: number,
+        @request() req: Request,
+        @response() res: Response
+    ){
+        const price_raw = io_ts.number.decode(Number(req.body.price))
+        if(price_raw._tag == "Left"){
+            return res.status(400).end("error price")
+        }
+        const dev_price = price_raw.right
+        return this.prisma.file.findUnique({
+            where:{id: Number(id)}
+        }).then(file=>file?file:Promise.reject("not_found"))
+            .then(file=>{
+                return this.prisma.$transaction([
+                    this.prisma.dev.update({
+                        where:{id:1},
+                        data:{price:{
+                            decrement: file.dev_price - dev_price
+                        }}
+                    }),
+                    this.prisma.file.update({
+                        where:{id:  file.id},
+                        data:{dev_price}
+                    })
+                ])
             })
     }
 
