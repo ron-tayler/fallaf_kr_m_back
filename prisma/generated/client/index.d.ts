@@ -65,6 +65,55 @@ export type Dev = {
   price: number
 }
 
+/**
+ * Model User
+ * 
+ */
+export type User = {
+  id: number
+  role: UserRole
+  login: string
+  password: string
+  status: UserStatus
+  instructorId: number | null
+}
+
+/**
+ * Model UserInvate
+ * 
+ */
+export type UserInvate = {
+  userId: number
+  hash: string
+  status: boolean
+}
+
+
+/**
+ * Enums
+ */
+
+// Based on
+// https://github.com/microsoft/TypeScript/issues/3192#issuecomment-261720275
+
+export const UserRole: {
+  Admin: 'Admin',
+  Manager: 'Manager',
+  Instructor: 'Instructor',
+  User: 'User'
+};
+
+export type UserRole = (typeof UserRole)[keyof typeof UserRole]
+
+
+export const UserStatus: {
+  New: 'New',
+  Active: 'Active',
+  Deactive: 'Deactive'
+};
+
+export type UserStatus = (typeof UserStatus)[keyof typeof UserStatus]
+
 
 /**
  * ##  Prisma Client ʲˢ
@@ -255,6 +304,26 @@ export class PrismaClient<
     * ```
     */
   get dev(): Prisma.DevDelegate<GlobalReject>;
+
+  /**
+   * `prisma.user`: Exposes CRUD operations for the **User** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Users
+    * const users = await prisma.user.findMany()
+    * ```
+    */
+  get user(): Prisma.UserDelegate<GlobalReject>;
+
+  /**
+   * `prisma.userInvate`: Exposes CRUD operations for the **UserInvate** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more UserInvates
+    * const userInvates = await prisma.userInvate.findMany()
+    * ```
+    */
+  get userInvate(): Prisma.UserInvateDelegate<GlobalReject>;
 }
 
 export namespace Prisma {
@@ -675,7 +744,9 @@ export namespace Prisma {
     File: 'File',
     InstructorHistory: 'InstructorHistory',
     DevHistory: 'DevHistory',
-    Dev: 'Dev'
+    Dev: 'Dev',
+    User: 'User',
+    UserInvate: 'UserInvate'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -841,11 +912,13 @@ export namespace Prisma {
   export type InstructorCountOutputType = {
     File: number
     InstructorHistory: number
+    User: number
   }
 
   export type InstructorCountOutputTypeSelect = {
     File?: boolean
     InstructorHistory?: boolean
+    User?: boolean
   }
 
   export type InstructorCountOutputTypeGetPayload<
@@ -1083,12 +1156,14 @@ export namespace Prisma {
     price?: boolean
     File?: boolean | FileFindManyArgs
     InstructorHistory?: boolean | InstructorHistoryFindManyArgs
+    User?: boolean | UserFindManyArgs
     _count?: boolean | InstructorCountOutputTypeArgs
   }
 
   export type InstructorInclude = {
     File?: boolean | FileFindManyArgs
     InstructorHistory?: boolean | InstructorHistoryFindManyArgs
+    User?: boolean | UserFindManyArgs
     _count?: boolean | InstructorCountOutputTypeArgs
   }
 
@@ -1105,6 +1180,7 @@ export namespace Prisma {
     [P in TrueKeys<S['include']>]:
         P extends 'File' ? Array < FileGetPayload<S['include'][P]>>  :
         P extends 'InstructorHistory' ? Array < InstructorHistoryGetPayload<S['include'][P]>>  :
+        P extends 'User' ? Array < UserGetPayload<S['include'][P]>>  :
         P extends '_count' ? InstructorCountOutputTypeGetPayload<S['include'][P]> :  never
   } 
     : 'select' extends U
@@ -1112,6 +1188,7 @@ export namespace Prisma {
     [P in TrueKeys<S['select']>]:
         P extends 'File' ? Array < FileGetPayload<S['select'][P]>>  :
         P extends 'InstructorHistory' ? Array < InstructorHistoryGetPayload<S['select'][P]>>  :
+        P extends 'User' ? Array < UserGetPayload<S['select'][P]>>  :
         P extends '_count' ? InstructorCountOutputTypeGetPayload<S['select'][P]> :  P extends keyof Instructor ? Instructor[P] : never
   } 
     : Instructor
@@ -1455,6 +1532,8 @@ export namespace Prisma {
     File<T extends FileFindManyArgs = {}>(args?: Subset<T, FileFindManyArgs>): CheckSelect<T, PrismaPromise<Array<File>>, PrismaPromise<Array<FileGetPayload<T>>>>;
 
     InstructorHistory<T extends InstructorHistoryFindManyArgs = {}>(args?: Subset<T, InstructorHistoryFindManyArgs>): CheckSelect<T, PrismaPromise<Array<InstructorHistory>>, PrismaPromise<Array<InstructorHistoryGetPayload<T>>>>;
+
+    User<T extends UserFindManyArgs = {}>(args?: Subset<T, UserFindManyArgs>): CheckSelect<T, PrismaPromise<Array<User>>, PrismaPromise<Array<UserGetPayload<T>>>>;
 
     private get _document();
     /**
@@ -5267,6 +5346,1804 @@ export namespace Prisma {
 
 
   /**
+   * Model User
+   */
+
+
+  export type AggregateUser = {
+    _count: UserCountAggregateOutputType | null
+    _avg: UserAvgAggregateOutputType | null
+    _sum: UserSumAggregateOutputType | null
+    _min: UserMinAggregateOutputType | null
+    _max: UserMaxAggregateOutputType | null
+  }
+
+  export type UserAvgAggregateOutputType = {
+    id: number | null
+    instructorId: number | null
+  }
+
+  export type UserSumAggregateOutputType = {
+    id: number | null
+    instructorId: number | null
+  }
+
+  export type UserMinAggregateOutputType = {
+    id: number | null
+    role: UserRole | null
+    login: string | null
+    password: string | null
+    status: UserStatus | null
+    instructorId: number | null
+  }
+
+  export type UserMaxAggregateOutputType = {
+    id: number | null
+    role: UserRole | null
+    login: string | null
+    password: string | null
+    status: UserStatus | null
+    instructorId: number | null
+  }
+
+  export type UserCountAggregateOutputType = {
+    id: number
+    role: number
+    login: number
+    password: number
+    status: number
+    instructorId: number
+    _all: number
+  }
+
+
+  export type UserAvgAggregateInputType = {
+    id?: true
+    instructorId?: true
+  }
+
+  export type UserSumAggregateInputType = {
+    id?: true
+    instructorId?: true
+  }
+
+  export type UserMinAggregateInputType = {
+    id?: true
+    role?: true
+    login?: true
+    password?: true
+    status?: true
+    instructorId?: true
+  }
+
+  export type UserMaxAggregateInputType = {
+    id?: true
+    role?: true
+    login?: true
+    password?: true
+    status?: true
+    instructorId?: true
+  }
+
+  export type UserCountAggregateInputType = {
+    id?: true
+    role?: true
+    login?: true
+    password?: true
+    status?: true
+    instructorId?: true
+    _all?: true
+  }
+
+  export type UserAggregateArgs = {
+    /**
+     * Filter which User to aggregate.
+     * 
+    **/
+    where?: UserWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Users to fetch.
+     * 
+    **/
+    orderBy?: Enumerable<UserOrderByWithRelationInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     * 
+    **/
+    cursor?: UserWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Users from the position of the cursor.
+     * 
+    **/
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Users.
+     * 
+    **/
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Users
+    **/
+    _count?: true | UserCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: UserAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: UserSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: UserMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: UserMaxAggregateInputType
+  }
+
+  export type GetUserAggregateType<T extends UserAggregateArgs> = {
+        [P in keyof T & keyof AggregateUser]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateUser[P]>
+      : GetScalarType<T[P], AggregateUser[P]>
+  }
+
+
+
+
+  export type UserGroupByArgs = {
+    where?: UserWhereInput
+    orderBy?: Enumerable<UserOrderByWithAggregationInput>
+    by: Array<UserScalarFieldEnum>
+    having?: UserScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: UserCountAggregateInputType | true
+    _avg?: UserAvgAggregateInputType
+    _sum?: UserSumAggregateInputType
+    _min?: UserMinAggregateInputType
+    _max?: UserMaxAggregateInputType
+  }
+
+
+  export type UserGroupByOutputType = {
+    id: number
+    role: UserRole
+    login: string
+    password: string
+    status: UserStatus
+    instructorId: number | null
+    _count: UserCountAggregateOutputType | null
+    _avg: UserAvgAggregateOutputType | null
+    _sum: UserSumAggregateOutputType | null
+    _min: UserMinAggregateOutputType | null
+    _max: UserMaxAggregateOutputType | null
+  }
+
+  type GetUserGroupByPayload<T extends UserGroupByArgs> = PrismaPromise<
+    Array<
+      PickArray<UserGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof UserGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], UserGroupByOutputType[P]>
+            : GetScalarType<T[P], UserGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type UserSelect = {
+    id?: boolean
+    role?: boolean
+    login?: boolean
+    password?: boolean
+    status?: boolean
+    instructorId?: boolean
+    instructor?: boolean | InstructorArgs
+    invite?: boolean | UserInvateArgs
+  }
+
+  export type UserInclude = {
+    instructor?: boolean | InstructorArgs
+    invite?: boolean | UserInvateArgs
+  }
+
+  export type UserGetPayload<
+    S extends boolean | null | undefined | UserArgs,
+    U = keyof S
+      > = S extends true
+        ? User
+    : S extends undefined
+    ? never
+    : S extends UserArgs | UserFindManyArgs
+    ?'include' extends U
+    ? User  & {
+    [P in TrueKeys<S['include']>]:
+        P extends 'instructor' ? InstructorGetPayload<S['include'][P]> | null :
+        P extends 'invite' ? UserInvateGetPayload<S['include'][P]> | null :  never
+  } 
+    : 'select' extends U
+    ? {
+    [P in TrueKeys<S['select']>]:
+        P extends 'instructor' ? InstructorGetPayload<S['select'][P]> | null :
+        P extends 'invite' ? UserInvateGetPayload<S['select'][P]> | null :  P extends keyof User ? User[P] : never
+  } 
+    : User
+  : User
+
+
+  type UserCountArgs = Merge<
+    Omit<UserFindManyArgs, 'select' | 'include'> & {
+      select?: UserCountAggregateInputType | true
+    }
+  >
+
+  export interface UserDelegate<GlobalRejectSettings> {
+    /**
+     * Find zero or one User that matches the filter.
+     * @param {UserFindUniqueArgs} args - Arguments to find a User
+     * @example
+     * // Get one User
+     * const user = await prisma.user.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findUnique<T extends UserFindUniqueArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
+      args: SelectSubset<T, UserFindUniqueArgs>
+    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findUnique', 'User'> extends True ? CheckSelect<T, Prisma__UserClient<User>, Prisma__UserClient<UserGetPayload<T>>> : CheckSelect<T, Prisma__UserClient<User | null >, Prisma__UserClient<UserGetPayload<T> | null >>
+
+    /**
+     * Find the first User that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UserFindFirstArgs} args - Arguments to find a User
+     * @example
+     * // Get one User
+     * const user = await prisma.user.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findFirst<T extends UserFindFirstArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
+      args?: SelectSubset<T, UserFindFirstArgs>
+    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findFirst', 'User'> extends True ? CheckSelect<T, Prisma__UserClient<User>, Prisma__UserClient<UserGetPayload<T>>> : CheckSelect<T, Prisma__UserClient<User | null >, Prisma__UserClient<UserGetPayload<T> | null >>
+
+    /**
+     * Find zero or more Users that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UserFindManyArgs=} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Users
+     * const users = await prisma.user.findMany()
+     * 
+     * // Get first 10 Users
+     * const users = await prisma.user.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const userWithIdOnly = await prisma.user.findMany({ select: { id: true } })
+     * 
+    **/
+    findMany<T extends UserFindManyArgs>(
+      args?: SelectSubset<T, UserFindManyArgs>
+    ): CheckSelect<T, PrismaPromise<Array<User>>, PrismaPromise<Array<UserGetPayload<T>>>>
+
+    /**
+     * Create a User.
+     * @param {UserCreateArgs} args - Arguments to create a User.
+     * @example
+     * // Create one User
+     * const User = await prisma.user.create({
+     *   data: {
+     *     // ... data to create a User
+     *   }
+     * })
+     * 
+    **/
+    create<T extends UserCreateArgs>(
+      args: SelectSubset<T, UserCreateArgs>
+    ): CheckSelect<T, Prisma__UserClient<User>, Prisma__UserClient<UserGetPayload<T>>>
+
+    /**
+     * Create many Users.
+     *     @param {UserCreateManyArgs} args - Arguments to create many Users.
+     *     @example
+     *     // Create many Users
+     *     const user = await prisma.user.createMany({
+     *       data: {
+     *         // ... provide data here
+     *       }
+     *     })
+     *     
+    **/
+    createMany<T extends UserCreateManyArgs>(
+      args?: SelectSubset<T, UserCreateManyArgs>
+    ): PrismaPromise<BatchPayload>
+
+    /**
+     * Delete a User.
+     * @param {UserDeleteArgs} args - Arguments to delete one User.
+     * @example
+     * // Delete one User
+     * const User = await prisma.user.delete({
+     *   where: {
+     *     // ... filter to delete one User
+     *   }
+     * })
+     * 
+    **/
+    delete<T extends UserDeleteArgs>(
+      args: SelectSubset<T, UserDeleteArgs>
+    ): CheckSelect<T, Prisma__UserClient<User>, Prisma__UserClient<UserGetPayload<T>>>
+
+    /**
+     * Update one User.
+     * @param {UserUpdateArgs} args - Arguments to update one User.
+     * @example
+     * // Update one User
+     * const user = await prisma.user.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+    **/
+    update<T extends UserUpdateArgs>(
+      args: SelectSubset<T, UserUpdateArgs>
+    ): CheckSelect<T, Prisma__UserClient<User>, Prisma__UserClient<UserGetPayload<T>>>
+
+    /**
+     * Delete zero or more Users.
+     * @param {UserDeleteManyArgs} args - Arguments to filter Users to delete.
+     * @example
+     * // Delete a few Users
+     * const { count } = await prisma.user.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+    **/
+    deleteMany<T extends UserDeleteManyArgs>(
+      args?: SelectSubset<T, UserDeleteManyArgs>
+    ): PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Users.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UserUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Users
+     * const user = await prisma.user.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+    **/
+    updateMany<T extends UserUpdateManyArgs>(
+      args: SelectSubset<T, UserUpdateManyArgs>
+    ): PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one User.
+     * @param {UserUpsertArgs} args - Arguments to update or create a User.
+     * @example
+     * // Update or create a User
+     * const user = await prisma.user.upsert({
+     *   create: {
+     *     // ... data to create a User
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the User we want to update
+     *   }
+     * })
+    **/
+    upsert<T extends UserUpsertArgs>(
+      args: SelectSubset<T, UserUpsertArgs>
+    ): CheckSelect<T, Prisma__UserClient<User>, Prisma__UserClient<UserGetPayload<T>>>
+
+    /**
+     * Count the number of Users.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UserCountArgs} args - Arguments to filter Users to count.
+     * @example
+     * // Count the number of Users
+     * const count = await prisma.user.count({
+     *   where: {
+     *     // ... the filter for the Users we want to count
+     *   }
+     * })
+    **/
+    count<T extends UserCountArgs>(
+      args?: Subset<T, UserCountArgs>,
+    ): PrismaPromise<
+      T extends _Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], UserCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a User.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UserAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends UserAggregateArgs>(args: Subset<T, UserAggregateArgs>): PrismaPromise<GetUserAggregateType<T>>
+
+    /**
+     * Group by User.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UserGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends UserGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: UserGroupByArgs['orderBy'] }
+        : { orderBy?: UserGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends TupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, UserGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetUserGroupByPayload<T> : PrismaPromise<InputErrors>
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for User.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export class Prisma__UserClient<T> implements PrismaPromise<T> {
+    [prisma]: true;
+    private readonly _dmmf;
+    private readonly _fetcher;
+    private readonly _queryType;
+    private readonly _rootField;
+    private readonly _clientMethod;
+    private readonly _args;
+    private readonly _dataPath;
+    private readonly _errorFormat;
+    private readonly _measurePerformance?;
+    private _isList;
+    private _callsite;
+    private _requestPromise?;
+    constructor(_dmmf: runtime.DMMFClass, _fetcher: PrismaClientFetcher, _queryType: 'query' | 'mutation', _rootField: string, _clientMethod: string, _args: any, _dataPath: string[], _errorFormat: ErrorFormat, _measurePerformance?: boolean | undefined, _isList?: boolean);
+    readonly [Symbol.toStringTag]: 'PrismaClientPromise';
+
+    instructor<T extends InstructorArgs = {}>(args?: Subset<T, InstructorArgs>): CheckSelect<T, Prisma__InstructorClient<Instructor | null >, Prisma__InstructorClient<InstructorGetPayload<T> | null >>;
+
+    invite<T extends UserInvateArgs = {}>(args?: Subset<T, UserInvateArgs>): CheckSelect<T, Prisma__UserInvateClient<UserInvate | null >, Prisma__UserInvateClient<UserInvateGetPayload<T> | null >>;
+
+    private get _document();
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): Promise<TResult1 | TResult2>;
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): Promise<T | TResult>;
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): Promise<T>;
+  }
+
+  // Custom InputTypes
+
+  /**
+   * User findUnique
+   */
+  export type UserFindUniqueArgs = {
+    /**
+     * Select specific fields to fetch from the User
+     * 
+    **/
+    select?: UserSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     * 
+    **/
+    include?: UserInclude | null
+    /**
+     * Throw an Error if a User can't be found
+     * 
+    **/
+    rejectOnNotFound?: RejectOnNotFound
+    /**
+     * Filter, which User to fetch.
+     * 
+    **/
+    where: UserWhereUniqueInput
+  }
+
+
+  /**
+   * User findFirst
+   */
+  export type UserFindFirstArgs = {
+    /**
+     * Select specific fields to fetch from the User
+     * 
+    **/
+    select?: UserSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     * 
+    **/
+    include?: UserInclude | null
+    /**
+     * Throw an Error if a User can't be found
+     * 
+    **/
+    rejectOnNotFound?: RejectOnNotFound
+    /**
+     * Filter, which User to fetch.
+     * 
+    **/
+    where?: UserWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Users to fetch.
+     * 
+    **/
+    orderBy?: Enumerable<UserOrderByWithRelationInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Users.
+     * 
+    **/
+    cursor?: UserWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Users from the position of the cursor.
+     * 
+    **/
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Users.
+     * 
+    **/
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Users.
+     * 
+    **/
+    distinct?: Enumerable<UserScalarFieldEnum>
+  }
+
+
+  /**
+   * User findMany
+   */
+  export type UserFindManyArgs = {
+    /**
+     * Select specific fields to fetch from the User
+     * 
+    **/
+    select?: UserSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     * 
+    **/
+    include?: UserInclude | null
+    /**
+     * Filter, which Users to fetch.
+     * 
+    **/
+    where?: UserWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Users to fetch.
+     * 
+    **/
+    orderBy?: Enumerable<UserOrderByWithRelationInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Users.
+     * 
+    **/
+    cursor?: UserWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Users from the position of the cursor.
+     * 
+    **/
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Users.
+     * 
+    **/
+    skip?: number
+    distinct?: Enumerable<UserScalarFieldEnum>
+  }
+
+
+  /**
+   * User create
+   */
+  export type UserCreateArgs = {
+    /**
+     * Select specific fields to fetch from the User
+     * 
+    **/
+    select?: UserSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     * 
+    **/
+    include?: UserInclude | null
+    /**
+     * The data needed to create a User.
+     * 
+    **/
+    data: XOR<UserCreateInput, UserUncheckedCreateInput>
+  }
+
+
+  /**
+   * User createMany
+   */
+  export type UserCreateManyArgs = {
+    /**
+     * The data used to create many Users.
+     * 
+    **/
+    data: Enumerable<UserCreateManyInput>
+    skipDuplicates?: boolean
+  }
+
+
+  /**
+   * User update
+   */
+  export type UserUpdateArgs = {
+    /**
+     * Select specific fields to fetch from the User
+     * 
+    **/
+    select?: UserSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     * 
+    **/
+    include?: UserInclude | null
+    /**
+     * The data needed to update a User.
+     * 
+    **/
+    data: XOR<UserUpdateInput, UserUncheckedUpdateInput>
+    /**
+     * Choose, which User to update.
+     * 
+    **/
+    where: UserWhereUniqueInput
+  }
+
+
+  /**
+   * User updateMany
+   */
+  export type UserUpdateManyArgs = {
+    /**
+     * The data used to update Users.
+     * 
+    **/
+    data: XOR<UserUpdateManyMutationInput, UserUncheckedUpdateManyInput>
+    /**
+     * Filter which Users to update
+     * 
+    **/
+    where?: UserWhereInput
+  }
+
+
+  /**
+   * User upsert
+   */
+  export type UserUpsertArgs = {
+    /**
+     * Select specific fields to fetch from the User
+     * 
+    **/
+    select?: UserSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     * 
+    **/
+    include?: UserInclude | null
+    /**
+     * The filter to search for the User to update in case it exists.
+     * 
+    **/
+    where: UserWhereUniqueInput
+    /**
+     * In case the User found by the `where` argument doesn't exist, create a new User with this data.
+     * 
+    **/
+    create: XOR<UserCreateInput, UserUncheckedCreateInput>
+    /**
+     * In case the User was found with the provided `where` argument, update it with this data.
+     * 
+    **/
+    update: XOR<UserUpdateInput, UserUncheckedUpdateInput>
+  }
+
+
+  /**
+   * User delete
+   */
+  export type UserDeleteArgs = {
+    /**
+     * Select specific fields to fetch from the User
+     * 
+    **/
+    select?: UserSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     * 
+    **/
+    include?: UserInclude | null
+    /**
+     * Filter which User to delete.
+     * 
+    **/
+    where: UserWhereUniqueInput
+  }
+
+
+  /**
+   * User deleteMany
+   */
+  export type UserDeleteManyArgs = {
+    /**
+     * Filter which Users to delete
+     * 
+    **/
+    where?: UserWhereInput
+  }
+
+
+  /**
+   * User without action
+   */
+  export type UserArgs = {
+    /**
+     * Select specific fields to fetch from the User
+     * 
+    **/
+    select?: UserSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     * 
+    **/
+    include?: UserInclude | null
+  }
+
+
+
+  /**
+   * Model UserInvate
+   */
+
+
+  export type AggregateUserInvate = {
+    _count: UserInvateCountAggregateOutputType | null
+    _avg: UserInvateAvgAggregateOutputType | null
+    _sum: UserInvateSumAggregateOutputType | null
+    _min: UserInvateMinAggregateOutputType | null
+    _max: UserInvateMaxAggregateOutputType | null
+  }
+
+  export type UserInvateAvgAggregateOutputType = {
+    userId: number | null
+  }
+
+  export type UserInvateSumAggregateOutputType = {
+    userId: number | null
+  }
+
+  export type UserInvateMinAggregateOutputType = {
+    userId: number | null
+    hash: string | null
+    status: boolean | null
+  }
+
+  export type UserInvateMaxAggregateOutputType = {
+    userId: number | null
+    hash: string | null
+    status: boolean | null
+  }
+
+  export type UserInvateCountAggregateOutputType = {
+    userId: number
+    hash: number
+    status: number
+    _all: number
+  }
+
+
+  export type UserInvateAvgAggregateInputType = {
+    userId?: true
+  }
+
+  export type UserInvateSumAggregateInputType = {
+    userId?: true
+  }
+
+  export type UserInvateMinAggregateInputType = {
+    userId?: true
+    hash?: true
+    status?: true
+  }
+
+  export type UserInvateMaxAggregateInputType = {
+    userId?: true
+    hash?: true
+    status?: true
+  }
+
+  export type UserInvateCountAggregateInputType = {
+    userId?: true
+    hash?: true
+    status?: true
+    _all?: true
+  }
+
+  export type UserInvateAggregateArgs = {
+    /**
+     * Filter which UserInvate to aggregate.
+     * 
+    **/
+    where?: UserInvateWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of UserInvates to fetch.
+     * 
+    **/
+    orderBy?: Enumerable<UserInvateOrderByWithRelationInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     * 
+    **/
+    cursor?: UserInvateWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` UserInvates from the position of the cursor.
+     * 
+    **/
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` UserInvates.
+     * 
+    **/
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned UserInvates
+    **/
+    _count?: true | UserInvateCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: UserInvateAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: UserInvateSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: UserInvateMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: UserInvateMaxAggregateInputType
+  }
+
+  export type GetUserInvateAggregateType<T extends UserInvateAggregateArgs> = {
+        [P in keyof T & keyof AggregateUserInvate]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateUserInvate[P]>
+      : GetScalarType<T[P], AggregateUserInvate[P]>
+  }
+
+
+
+
+  export type UserInvateGroupByArgs = {
+    where?: UserInvateWhereInput
+    orderBy?: Enumerable<UserInvateOrderByWithAggregationInput>
+    by: Array<UserInvateScalarFieldEnum>
+    having?: UserInvateScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: UserInvateCountAggregateInputType | true
+    _avg?: UserInvateAvgAggregateInputType
+    _sum?: UserInvateSumAggregateInputType
+    _min?: UserInvateMinAggregateInputType
+    _max?: UserInvateMaxAggregateInputType
+  }
+
+
+  export type UserInvateGroupByOutputType = {
+    userId: number
+    hash: string
+    status: boolean
+    _count: UserInvateCountAggregateOutputType | null
+    _avg: UserInvateAvgAggregateOutputType | null
+    _sum: UserInvateSumAggregateOutputType | null
+    _min: UserInvateMinAggregateOutputType | null
+    _max: UserInvateMaxAggregateOutputType | null
+  }
+
+  type GetUserInvateGroupByPayload<T extends UserInvateGroupByArgs> = PrismaPromise<
+    Array<
+      PickArray<UserInvateGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof UserInvateGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], UserInvateGroupByOutputType[P]>
+            : GetScalarType<T[P], UserInvateGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type UserInvateSelect = {
+    userId?: boolean
+    hash?: boolean
+    status?: boolean
+    user?: boolean | UserArgs
+  }
+
+  export type UserInvateInclude = {
+    user?: boolean | UserArgs
+  }
+
+  export type UserInvateGetPayload<
+    S extends boolean | null | undefined | UserInvateArgs,
+    U = keyof S
+      > = S extends true
+        ? UserInvate
+    : S extends undefined
+    ? never
+    : S extends UserInvateArgs | UserInvateFindManyArgs
+    ?'include' extends U
+    ? UserInvate  & {
+    [P in TrueKeys<S['include']>]:
+        P extends 'user' ? UserGetPayload<S['include'][P]> :  never
+  } 
+    : 'select' extends U
+    ? {
+    [P in TrueKeys<S['select']>]:
+        P extends 'user' ? UserGetPayload<S['select'][P]> :  P extends keyof UserInvate ? UserInvate[P] : never
+  } 
+    : UserInvate
+  : UserInvate
+
+
+  type UserInvateCountArgs = Merge<
+    Omit<UserInvateFindManyArgs, 'select' | 'include'> & {
+      select?: UserInvateCountAggregateInputType | true
+    }
+  >
+
+  export interface UserInvateDelegate<GlobalRejectSettings> {
+    /**
+     * Find zero or one UserInvate that matches the filter.
+     * @param {UserInvateFindUniqueArgs} args - Arguments to find a UserInvate
+     * @example
+     * // Get one UserInvate
+     * const userInvate = await prisma.userInvate.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findUnique<T extends UserInvateFindUniqueArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
+      args: SelectSubset<T, UserInvateFindUniqueArgs>
+    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findUnique', 'UserInvate'> extends True ? CheckSelect<T, Prisma__UserInvateClient<UserInvate>, Prisma__UserInvateClient<UserInvateGetPayload<T>>> : CheckSelect<T, Prisma__UserInvateClient<UserInvate | null >, Prisma__UserInvateClient<UserInvateGetPayload<T> | null >>
+
+    /**
+     * Find the first UserInvate that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UserInvateFindFirstArgs} args - Arguments to find a UserInvate
+     * @example
+     * // Get one UserInvate
+     * const userInvate = await prisma.userInvate.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findFirst<T extends UserInvateFindFirstArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
+      args?: SelectSubset<T, UserInvateFindFirstArgs>
+    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findFirst', 'UserInvate'> extends True ? CheckSelect<T, Prisma__UserInvateClient<UserInvate>, Prisma__UserInvateClient<UserInvateGetPayload<T>>> : CheckSelect<T, Prisma__UserInvateClient<UserInvate | null >, Prisma__UserInvateClient<UserInvateGetPayload<T> | null >>
+
+    /**
+     * Find zero or more UserInvates that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UserInvateFindManyArgs=} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all UserInvates
+     * const userInvates = await prisma.userInvate.findMany()
+     * 
+     * // Get first 10 UserInvates
+     * const userInvates = await prisma.userInvate.findMany({ take: 10 })
+     * 
+     * // Only select the `userId`
+     * const userInvateWithUserIdOnly = await prisma.userInvate.findMany({ select: { userId: true } })
+     * 
+    **/
+    findMany<T extends UserInvateFindManyArgs>(
+      args?: SelectSubset<T, UserInvateFindManyArgs>
+    ): CheckSelect<T, PrismaPromise<Array<UserInvate>>, PrismaPromise<Array<UserInvateGetPayload<T>>>>
+
+    /**
+     * Create a UserInvate.
+     * @param {UserInvateCreateArgs} args - Arguments to create a UserInvate.
+     * @example
+     * // Create one UserInvate
+     * const UserInvate = await prisma.userInvate.create({
+     *   data: {
+     *     // ... data to create a UserInvate
+     *   }
+     * })
+     * 
+    **/
+    create<T extends UserInvateCreateArgs>(
+      args: SelectSubset<T, UserInvateCreateArgs>
+    ): CheckSelect<T, Prisma__UserInvateClient<UserInvate>, Prisma__UserInvateClient<UserInvateGetPayload<T>>>
+
+    /**
+     * Create many UserInvates.
+     *     @param {UserInvateCreateManyArgs} args - Arguments to create many UserInvates.
+     *     @example
+     *     // Create many UserInvates
+     *     const userInvate = await prisma.userInvate.createMany({
+     *       data: {
+     *         // ... provide data here
+     *       }
+     *     })
+     *     
+    **/
+    createMany<T extends UserInvateCreateManyArgs>(
+      args?: SelectSubset<T, UserInvateCreateManyArgs>
+    ): PrismaPromise<BatchPayload>
+
+    /**
+     * Delete a UserInvate.
+     * @param {UserInvateDeleteArgs} args - Arguments to delete one UserInvate.
+     * @example
+     * // Delete one UserInvate
+     * const UserInvate = await prisma.userInvate.delete({
+     *   where: {
+     *     // ... filter to delete one UserInvate
+     *   }
+     * })
+     * 
+    **/
+    delete<T extends UserInvateDeleteArgs>(
+      args: SelectSubset<T, UserInvateDeleteArgs>
+    ): CheckSelect<T, Prisma__UserInvateClient<UserInvate>, Prisma__UserInvateClient<UserInvateGetPayload<T>>>
+
+    /**
+     * Update one UserInvate.
+     * @param {UserInvateUpdateArgs} args - Arguments to update one UserInvate.
+     * @example
+     * // Update one UserInvate
+     * const userInvate = await prisma.userInvate.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+    **/
+    update<T extends UserInvateUpdateArgs>(
+      args: SelectSubset<T, UserInvateUpdateArgs>
+    ): CheckSelect<T, Prisma__UserInvateClient<UserInvate>, Prisma__UserInvateClient<UserInvateGetPayload<T>>>
+
+    /**
+     * Delete zero or more UserInvates.
+     * @param {UserInvateDeleteManyArgs} args - Arguments to filter UserInvates to delete.
+     * @example
+     * // Delete a few UserInvates
+     * const { count } = await prisma.userInvate.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+    **/
+    deleteMany<T extends UserInvateDeleteManyArgs>(
+      args?: SelectSubset<T, UserInvateDeleteManyArgs>
+    ): PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more UserInvates.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UserInvateUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many UserInvates
+     * const userInvate = await prisma.userInvate.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+    **/
+    updateMany<T extends UserInvateUpdateManyArgs>(
+      args: SelectSubset<T, UserInvateUpdateManyArgs>
+    ): PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one UserInvate.
+     * @param {UserInvateUpsertArgs} args - Arguments to update or create a UserInvate.
+     * @example
+     * // Update or create a UserInvate
+     * const userInvate = await prisma.userInvate.upsert({
+     *   create: {
+     *     // ... data to create a UserInvate
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the UserInvate we want to update
+     *   }
+     * })
+    **/
+    upsert<T extends UserInvateUpsertArgs>(
+      args: SelectSubset<T, UserInvateUpsertArgs>
+    ): CheckSelect<T, Prisma__UserInvateClient<UserInvate>, Prisma__UserInvateClient<UserInvateGetPayload<T>>>
+
+    /**
+     * Count the number of UserInvates.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UserInvateCountArgs} args - Arguments to filter UserInvates to count.
+     * @example
+     * // Count the number of UserInvates
+     * const count = await prisma.userInvate.count({
+     *   where: {
+     *     // ... the filter for the UserInvates we want to count
+     *   }
+     * })
+    **/
+    count<T extends UserInvateCountArgs>(
+      args?: Subset<T, UserInvateCountArgs>,
+    ): PrismaPromise<
+      T extends _Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], UserInvateCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a UserInvate.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UserInvateAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends UserInvateAggregateArgs>(args: Subset<T, UserInvateAggregateArgs>): PrismaPromise<GetUserInvateAggregateType<T>>
+
+    /**
+     * Group by UserInvate.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UserInvateGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends UserInvateGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: UserInvateGroupByArgs['orderBy'] }
+        : { orderBy?: UserInvateGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends TupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, UserInvateGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetUserInvateGroupByPayload<T> : PrismaPromise<InputErrors>
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for UserInvate.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export class Prisma__UserInvateClient<T> implements PrismaPromise<T> {
+    [prisma]: true;
+    private readonly _dmmf;
+    private readonly _fetcher;
+    private readonly _queryType;
+    private readonly _rootField;
+    private readonly _clientMethod;
+    private readonly _args;
+    private readonly _dataPath;
+    private readonly _errorFormat;
+    private readonly _measurePerformance?;
+    private _isList;
+    private _callsite;
+    private _requestPromise?;
+    constructor(_dmmf: runtime.DMMFClass, _fetcher: PrismaClientFetcher, _queryType: 'query' | 'mutation', _rootField: string, _clientMethod: string, _args: any, _dataPath: string[], _errorFormat: ErrorFormat, _measurePerformance?: boolean | undefined, _isList?: boolean);
+    readonly [Symbol.toStringTag]: 'PrismaClientPromise';
+
+    user<T extends UserArgs = {}>(args?: Subset<T, UserArgs>): CheckSelect<T, Prisma__UserClient<User | null >, Prisma__UserClient<UserGetPayload<T> | null >>;
+
+    private get _document();
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): Promise<TResult1 | TResult2>;
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): Promise<T | TResult>;
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): Promise<T>;
+  }
+
+  // Custom InputTypes
+
+  /**
+   * UserInvate findUnique
+   */
+  export type UserInvateFindUniqueArgs = {
+    /**
+     * Select specific fields to fetch from the UserInvate
+     * 
+    **/
+    select?: UserInvateSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     * 
+    **/
+    include?: UserInvateInclude | null
+    /**
+     * Throw an Error if a UserInvate can't be found
+     * 
+    **/
+    rejectOnNotFound?: RejectOnNotFound
+    /**
+     * Filter, which UserInvate to fetch.
+     * 
+    **/
+    where: UserInvateWhereUniqueInput
+  }
+
+
+  /**
+   * UserInvate findFirst
+   */
+  export type UserInvateFindFirstArgs = {
+    /**
+     * Select specific fields to fetch from the UserInvate
+     * 
+    **/
+    select?: UserInvateSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     * 
+    **/
+    include?: UserInvateInclude | null
+    /**
+     * Throw an Error if a UserInvate can't be found
+     * 
+    **/
+    rejectOnNotFound?: RejectOnNotFound
+    /**
+     * Filter, which UserInvate to fetch.
+     * 
+    **/
+    where?: UserInvateWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of UserInvates to fetch.
+     * 
+    **/
+    orderBy?: Enumerable<UserInvateOrderByWithRelationInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for UserInvates.
+     * 
+    **/
+    cursor?: UserInvateWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` UserInvates from the position of the cursor.
+     * 
+    **/
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` UserInvates.
+     * 
+    **/
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of UserInvates.
+     * 
+    **/
+    distinct?: Enumerable<UserInvateScalarFieldEnum>
+  }
+
+
+  /**
+   * UserInvate findMany
+   */
+  export type UserInvateFindManyArgs = {
+    /**
+     * Select specific fields to fetch from the UserInvate
+     * 
+    **/
+    select?: UserInvateSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     * 
+    **/
+    include?: UserInvateInclude | null
+    /**
+     * Filter, which UserInvates to fetch.
+     * 
+    **/
+    where?: UserInvateWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of UserInvates to fetch.
+     * 
+    **/
+    orderBy?: Enumerable<UserInvateOrderByWithRelationInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing UserInvates.
+     * 
+    **/
+    cursor?: UserInvateWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` UserInvates from the position of the cursor.
+     * 
+    **/
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` UserInvates.
+     * 
+    **/
+    skip?: number
+    distinct?: Enumerable<UserInvateScalarFieldEnum>
+  }
+
+
+  /**
+   * UserInvate create
+   */
+  export type UserInvateCreateArgs = {
+    /**
+     * Select specific fields to fetch from the UserInvate
+     * 
+    **/
+    select?: UserInvateSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     * 
+    **/
+    include?: UserInvateInclude | null
+    /**
+     * The data needed to create a UserInvate.
+     * 
+    **/
+    data: XOR<UserInvateCreateInput, UserInvateUncheckedCreateInput>
+  }
+
+
+  /**
+   * UserInvate createMany
+   */
+  export type UserInvateCreateManyArgs = {
+    /**
+     * The data used to create many UserInvates.
+     * 
+    **/
+    data: Enumerable<UserInvateCreateManyInput>
+    skipDuplicates?: boolean
+  }
+
+
+  /**
+   * UserInvate update
+   */
+  export type UserInvateUpdateArgs = {
+    /**
+     * Select specific fields to fetch from the UserInvate
+     * 
+    **/
+    select?: UserInvateSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     * 
+    **/
+    include?: UserInvateInclude | null
+    /**
+     * The data needed to update a UserInvate.
+     * 
+    **/
+    data: XOR<UserInvateUpdateInput, UserInvateUncheckedUpdateInput>
+    /**
+     * Choose, which UserInvate to update.
+     * 
+    **/
+    where: UserInvateWhereUniqueInput
+  }
+
+
+  /**
+   * UserInvate updateMany
+   */
+  export type UserInvateUpdateManyArgs = {
+    /**
+     * The data used to update UserInvates.
+     * 
+    **/
+    data: XOR<UserInvateUpdateManyMutationInput, UserInvateUncheckedUpdateManyInput>
+    /**
+     * Filter which UserInvates to update
+     * 
+    **/
+    where?: UserInvateWhereInput
+  }
+
+
+  /**
+   * UserInvate upsert
+   */
+  export type UserInvateUpsertArgs = {
+    /**
+     * Select specific fields to fetch from the UserInvate
+     * 
+    **/
+    select?: UserInvateSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     * 
+    **/
+    include?: UserInvateInclude | null
+    /**
+     * The filter to search for the UserInvate to update in case it exists.
+     * 
+    **/
+    where: UserInvateWhereUniqueInput
+    /**
+     * In case the UserInvate found by the `where` argument doesn't exist, create a new UserInvate with this data.
+     * 
+    **/
+    create: XOR<UserInvateCreateInput, UserInvateUncheckedCreateInput>
+    /**
+     * In case the UserInvate was found with the provided `where` argument, update it with this data.
+     * 
+    **/
+    update: XOR<UserInvateUpdateInput, UserInvateUncheckedUpdateInput>
+  }
+
+
+  /**
+   * UserInvate delete
+   */
+  export type UserInvateDeleteArgs = {
+    /**
+     * Select specific fields to fetch from the UserInvate
+     * 
+    **/
+    select?: UserInvateSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     * 
+    **/
+    include?: UserInvateInclude | null
+    /**
+     * Filter which UserInvate to delete.
+     * 
+    **/
+    where: UserInvateWhereUniqueInput
+  }
+
+
+  /**
+   * UserInvate deleteMany
+   */
+  export type UserInvateDeleteManyArgs = {
+    /**
+     * Filter which UserInvates to delete
+     * 
+    **/
+    where?: UserInvateWhereInput
+  }
+
+
+  /**
+   * UserInvate without action
+   */
+  export type UserInvateArgs = {
+    /**
+     * Select specific fields to fetch from the UserInvate
+     * 
+    **/
+    select?: UserInvateSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     * 
+    **/
+    include?: UserInvateInclude | null
+  }
+
+
+
+  /**
    * Enums
    */
 
@@ -5321,6 +7198,27 @@ export namespace Prisma {
   export type DevScalarFieldEnum = (typeof DevScalarFieldEnum)[keyof typeof DevScalarFieldEnum]
 
 
+  export const UserScalarFieldEnum: {
+    id: 'id',
+    role: 'role',
+    login: 'login',
+    password: 'password',
+    status: 'status',
+    instructorId: 'instructorId'
+  };
+
+  export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
+
+
+  export const UserInvateScalarFieldEnum: {
+    userId: 'userId',
+    hash: 'hash',
+    status: 'status'
+  };
+
+  export type UserInvateScalarFieldEnum = (typeof UserInvateScalarFieldEnum)[keyof typeof UserInvateScalarFieldEnum]
+
+
   export const SortOrder: {
     asc: 'asc',
     desc: 'desc'
@@ -5343,6 +7241,7 @@ export namespace Prisma {
     price?: FloatFilter | number
     File?: FileListRelationFilter
     InstructorHistory?: InstructorHistoryListRelationFilter
+    User?: UserListRelationFilter
   }
 
   export type InstructorOrderByWithRelationInput = {
@@ -5351,6 +7250,7 @@ export namespace Prisma {
     price?: SortOrder
     File?: FileOrderByRelationAggregateInput
     InstructorHistory?: InstructorHistoryOrderByRelationAggregateInput
+    User?: UserOrderByRelationAggregateInput
   }
 
   export type InstructorWhereUniqueInput = {
@@ -5549,11 +7449,110 @@ export namespace Prisma {
     price?: FloatWithAggregatesFilter | number
   }
 
+  export type UserWhereInput = {
+    AND?: Enumerable<UserWhereInput>
+    OR?: Enumerable<UserWhereInput>
+    NOT?: Enumerable<UserWhereInput>
+    id?: IntFilter | number
+    role?: EnumUserRoleFilter | UserRole
+    login?: StringFilter | string
+    password?: StringFilter | string
+    status?: EnumUserStatusFilter | UserStatus
+    instructorId?: IntNullableFilter | number | null
+    instructor?: XOR<InstructorRelationFilter, InstructorWhereInput> | null
+    invite?: XOR<UserInvateRelationFilter, UserInvateWhereInput> | null
+  }
+
+  export type UserOrderByWithRelationInput = {
+    id?: SortOrder
+    role?: SortOrder
+    login?: SortOrder
+    password?: SortOrder
+    status?: SortOrder
+    instructorId?: SortOrder
+    instructor?: InstructorOrderByWithRelationInput
+    invite?: UserInvateOrderByWithRelationInput
+  }
+
+  export type UserWhereUniqueInput = {
+    id?: number
+    login?: string
+  }
+
+  export type UserOrderByWithAggregationInput = {
+    id?: SortOrder
+    role?: SortOrder
+    login?: SortOrder
+    password?: SortOrder
+    status?: SortOrder
+    instructorId?: SortOrder
+    _count?: UserCountOrderByAggregateInput
+    _avg?: UserAvgOrderByAggregateInput
+    _max?: UserMaxOrderByAggregateInput
+    _min?: UserMinOrderByAggregateInput
+    _sum?: UserSumOrderByAggregateInput
+  }
+
+  export type UserScalarWhereWithAggregatesInput = {
+    AND?: Enumerable<UserScalarWhereWithAggregatesInput>
+    OR?: Enumerable<UserScalarWhereWithAggregatesInput>
+    NOT?: Enumerable<UserScalarWhereWithAggregatesInput>
+    id?: IntWithAggregatesFilter | number
+    role?: EnumUserRoleWithAggregatesFilter | UserRole
+    login?: StringWithAggregatesFilter | string
+    password?: StringWithAggregatesFilter | string
+    status?: EnumUserStatusWithAggregatesFilter | UserStatus
+    instructorId?: IntNullableWithAggregatesFilter | number | null
+  }
+
+  export type UserInvateWhereInput = {
+    AND?: Enumerable<UserInvateWhereInput>
+    OR?: Enumerable<UserInvateWhereInput>
+    NOT?: Enumerable<UserInvateWhereInput>
+    userId?: IntFilter | number
+    hash?: StringFilter | string
+    status?: BoolFilter | boolean
+    user?: XOR<UserRelationFilter, UserWhereInput>
+  }
+
+  export type UserInvateOrderByWithRelationInput = {
+    userId?: SortOrder
+    hash?: SortOrder
+    status?: SortOrder
+    user?: UserOrderByWithRelationInput
+  }
+
+  export type UserInvateWhereUniqueInput = {
+    userId?: number
+    hash?: string
+  }
+
+  export type UserInvateOrderByWithAggregationInput = {
+    userId?: SortOrder
+    hash?: SortOrder
+    status?: SortOrder
+    _count?: UserInvateCountOrderByAggregateInput
+    _avg?: UserInvateAvgOrderByAggregateInput
+    _max?: UserInvateMaxOrderByAggregateInput
+    _min?: UserInvateMinOrderByAggregateInput
+    _sum?: UserInvateSumOrderByAggregateInput
+  }
+
+  export type UserInvateScalarWhereWithAggregatesInput = {
+    AND?: Enumerable<UserInvateScalarWhereWithAggregatesInput>
+    OR?: Enumerable<UserInvateScalarWhereWithAggregatesInput>
+    NOT?: Enumerable<UserInvateScalarWhereWithAggregatesInput>
+    userId?: IntWithAggregatesFilter | number
+    hash?: StringWithAggregatesFilter | string
+    status?: BoolWithAggregatesFilter | boolean
+  }
+
   export type InstructorCreateInput = {
     name: string
     price: number
     File?: FileCreateNestedManyWithoutInstructorInput
     InstructorHistory?: InstructorHistoryCreateNestedManyWithoutInstructorInput
+    User?: UserCreateNestedManyWithoutInstructorInput
   }
 
   export type InstructorUncheckedCreateInput = {
@@ -5562,6 +7561,7 @@ export namespace Prisma {
     price: number
     File?: FileUncheckedCreateNestedManyWithoutInstructorInput
     InstructorHistory?: InstructorHistoryUncheckedCreateNestedManyWithoutInstructorInput
+    User?: UserUncheckedCreateNestedManyWithoutInstructorInput
   }
 
   export type InstructorUpdateInput = {
@@ -5569,6 +7569,7 @@ export namespace Prisma {
     price?: FloatFieldUpdateOperationsInput | number
     File?: FileUpdateManyWithoutInstructorInput
     InstructorHistory?: InstructorHistoryUpdateManyWithoutInstructorInput
+    User?: UserUpdateManyWithoutInstructorInput
   }
 
   export type InstructorUncheckedUpdateInput = {
@@ -5577,6 +7578,7 @@ export namespace Prisma {
     price?: FloatFieldUpdateOperationsInput | number
     File?: FileUncheckedUpdateManyWithoutInstructorInput
     InstructorHistory?: InstructorHistoryUncheckedUpdateManyWithoutInstructorInput
+    User?: UserUncheckedUpdateManyWithoutInstructorInput
   }
 
   export type InstructorCreateManyInput = {
@@ -5771,6 +7773,110 @@ export namespace Prisma {
     price?: FloatFieldUpdateOperationsInput | number
   }
 
+  export type UserCreateInput = {
+    role?: UserRole
+    login: string
+    password: string
+    status: UserStatus
+    instructor?: InstructorCreateNestedOneWithoutUserInput
+    invite?: UserInvateCreateNestedOneWithoutUserInput
+  }
+
+  export type UserUncheckedCreateInput = {
+    id?: number
+    role?: UserRole
+    login: string
+    password: string
+    status: UserStatus
+    instructorId?: number | null
+    invite?: UserInvateUncheckedCreateNestedOneWithoutUserInput
+  }
+
+  export type UserUpdateInput = {
+    role?: EnumUserRoleFieldUpdateOperationsInput | UserRole
+    login?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    status?: EnumUserStatusFieldUpdateOperationsInput | UserStatus
+    instructor?: InstructorUpdateOneWithoutUserInput
+    invite?: UserInvateUpdateOneWithoutUserInput
+  }
+
+  export type UserUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    role?: EnumUserRoleFieldUpdateOperationsInput | UserRole
+    login?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    status?: EnumUserStatusFieldUpdateOperationsInput | UserStatus
+    instructorId?: NullableIntFieldUpdateOperationsInput | number | null
+    invite?: UserInvateUncheckedUpdateOneWithoutUserInput
+  }
+
+  export type UserCreateManyInput = {
+    id?: number
+    role?: UserRole
+    login: string
+    password: string
+    status: UserStatus
+    instructorId?: number | null
+  }
+
+  export type UserUpdateManyMutationInput = {
+    role?: EnumUserRoleFieldUpdateOperationsInput | UserRole
+    login?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    status?: EnumUserStatusFieldUpdateOperationsInput | UserStatus
+  }
+
+  export type UserUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    role?: EnumUserRoleFieldUpdateOperationsInput | UserRole
+    login?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    status?: EnumUserStatusFieldUpdateOperationsInput | UserStatus
+    instructorId?: NullableIntFieldUpdateOperationsInput | number | null
+  }
+
+  export type UserInvateCreateInput = {
+    hash: string
+    status: boolean
+    user: UserCreateNestedOneWithoutInviteInput
+  }
+
+  export type UserInvateUncheckedCreateInput = {
+    userId: number
+    hash: string
+    status: boolean
+  }
+
+  export type UserInvateUpdateInput = {
+    hash?: StringFieldUpdateOperationsInput | string
+    status?: BoolFieldUpdateOperationsInput | boolean
+    user?: UserUpdateOneRequiredWithoutInviteInput
+  }
+
+  export type UserInvateUncheckedUpdateInput = {
+    userId?: IntFieldUpdateOperationsInput | number
+    hash?: StringFieldUpdateOperationsInput | string
+    status?: BoolFieldUpdateOperationsInput | boolean
+  }
+
+  export type UserInvateCreateManyInput = {
+    userId: number
+    hash: string
+    status: boolean
+  }
+
+  export type UserInvateUpdateManyMutationInput = {
+    hash?: StringFieldUpdateOperationsInput | string
+    status?: BoolFieldUpdateOperationsInput | boolean
+  }
+
+  export type UserInvateUncheckedUpdateManyInput = {
+    userId?: IntFieldUpdateOperationsInput | number
+    hash?: StringFieldUpdateOperationsInput | string
+    status?: BoolFieldUpdateOperationsInput | boolean
+  }
+
   export type IntFilter = {
     equals?: number
     in?: Enumerable<number>
@@ -5819,11 +7925,21 @@ export namespace Prisma {
     none?: InstructorHistoryWhereInput
   }
 
+  export type UserListRelationFilter = {
+    every?: UserWhereInput
+    some?: UserWhereInput
+    none?: UserWhereInput
+  }
+
   export type FileOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
   export type InstructorHistoryOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type UserOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -6061,6 +8177,153 @@ export namespace Prisma {
     price?: SortOrder
   }
 
+  export type EnumUserRoleFilter = {
+    equals?: UserRole
+    in?: Enumerable<UserRole>
+    notIn?: Enumerable<UserRole>
+    not?: NestedEnumUserRoleFilter | UserRole
+  }
+
+  export type EnumUserStatusFilter = {
+    equals?: UserStatus
+    in?: Enumerable<UserStatus>
+    notIn?: Enumerable<UserStatus>
+    not?: NestedEnumUserStatusFilter | UserStatus
+  }
+
+  export type IntNullableFilter = {
+    equals?: number | null
+    in?: Enumerable<number> | null
+    notIn?: Enumerable<number> | null
+    lt?: number
+    lte?: number
+    gt?: number
+    gte?: number
+    not?: NestedIntNullableFilter | number | null
+  }
+
+  export type UserInvateRelationFilter = {
+    is?: UserInvateWhereInput | null
+    isNot?: UserInvateWhereInput | null
+  }
+
+  export type UserCountOrderByAggregateInput = {
+    id?: SortOrder
+    role?: SortOrder
+    login?: SortOrder
+    password?: SortOrder
+    status?: SortOrder
+    instructorId?: SortOrder
+  }
+
+  export type UserAvgOrderByAggregateInput = {
+    id?: SortOrder
+    instructorId?: SortOrder
+  }
+
+  export type UserMaxOrderByAggregateInput = {
+    id?: SortOrder
+    role?: SortOrder
+    login?: SortOrder
+    password?: SortOrder
+    status?: SortOrder
+    instructorId?: SortOrder
+  }
+
+  export type UserMinOrderByAggregateInput = {
+    id?: SortOrder
+    role?: SortOrder
+    login?: SortOrder
+    password?: SortOrder
+    status?: SortOrder
+    instructorId?: SortOrder
+  }
+
+  export type UserSumOrderByAggregateInput = {
+    id?: SortOrder
+    instructorId?: SortOrder
+  }
+
+  export type EnumUserRoleWithAggregatesFilter = {
+    equals?: UserRole
+    in?: Enumerable<UserRole>
+    notIn?: Enumerable<UserRole>
+    not?: NestedEnumUserRoleWithAggregatesFilter | UserRole
+    _count?: NestedIntFilter
+    _min?: NestedEnumUserRoleFilter
+    _max?: NestedEnumUserRoleFilter
+  }
+
+  export type EnumUserStatusWithAggregatesFilter = {
+    equals?: UserStatus
+    in?: Enumerable<UserStatus>
+    notIn?: Enumerable<UserStatus>
+    not?: NestedEnumUserStatusWithAggregatesFilter | UserStatus
+    _count?: NestedIntFilter
+    _min?: NestedEnumUserStatusFilter
+    _max?: NestedEnumUserStatusFilter
+  }
+
+  export type IntNullableWithAggregatesFilter = {
+    equals?: number | null
+    in?: Enumerable<number> | null
+    notIn?: Enumerable<number> | null
+    lt?: number
+    lte?: number
+    gt?: number
+    gte?: number
+    not?: NestedIntNullableWithAggregatesFilter | number | null
+    _count?: NestedIntNullableFilter
+    _avg?: NestedFloatNullableFilter
+    _sum?: NestedIntNullableFilter
+    _min?: NestedIntNullableFilter
+    _max?: NestedIntNullableFilter
+  }
+
+  export type BoolFilter = {
+    equals?: boolean
+    not?: NestedBoolFilter | boolean
+  }
+
+  export type UserRelationFilter = {
+    is?: UserWhereInput
+    isNot?: UserWhereInput
+  }
+
+  export type UserInvateCountOrderByAggregateInput = {
+    userId?: SortOrder
+    hash?: SortOrder
+    status?: SortOrder
+  }
+
+  export type UserInvateAvgOrderByAggregateInput = {
+    userId?: SortOrder
+  }
+
+  export type UserInvateMaxOrderByAggregateInput = {
+    userId?: SortOrder
+    hash?: SortOrder
+    status?: SortOrder
+  }
+
+  export type UserInvateMinOrderByAggregateInput = {
+    userId?: SortOrder
+    hash?: SortOrder
+    status?: SortOrder
+  }
+
+  export type UserInvateSumOrderByAggregateInput = {
+    userId?: SortOrder
+  }
+
+  export type BoolWithAggregatesFilter = {
+    equals?: boolean
+    not?: NestedBoolWithAggregatesFilter | boolean
+    _count?: NestedIntFilter
+    _min?: NestedBoolFilter
+    _max?: NestedBoolFilter
+  }
+
   export type FileCreateNestedManyWithoutInstructorInput = {
     create?: XOR<Enumerable<FileCreateWithoutInstructorInput>, Enumerable<FileUncheckedCreateWithoutInstructorInput>>
     connectOrCreate?: Enumerable<FileCreateOrConnectWithoutInstructorInput>
@@ -6075,6 +8338,13 @@ export namespace Prisma {
     connect?: Enumerable<InstructorHistoryWhereUniqueInput>
   }
 
+  export type UserCreateNestedManyWithoutInstructorInput = {
+    create?: XOR<Enumerable<UserCreateWithoutInstructorInput>, Enumerable<UserUncheckedCreateWithoutInstructorInput>>
+    connectOrCreate?: Enumerable<UserCreateOrConnectWithoutInstructorInput>
+    createMany?: UserCreateManyInstructorInputEnvelope
+    connect?: Enumerable<UserWhereUniqueInput>
+  }
+
   export type FileUncheckedCreateNestedManyWithoutInstructorInput = {
     create?: XOR<Enumerable<FileCreateWithoutInstructorInput>, Enumerable<FileUncheckedCreateWithoutInstructorInput>>
     connectOrCreate?: Enumerable<FileCreateOrConnectWithoutInstructorInput>
@@ -6087,6 +8357,13 @@ export namespace Prisma {
     connectOrCreate?: Enumerable<InstructorHistoryCreateOrConnectWithoutInstructorInput>
     createMany?: InstructorHistoryCreateManyInstructorInputEnvelope
     connect?: Enumerable<InstructorHistoryWhereUniqueInput>
+  }
+
+  export type UserUncheckedCreateNestedManyWithoutInstructorInput = {
+    create?: XOR<Enumerable<UserCreateWithoutInstructorInput>, Enumerable<UserUncheckedCreateWithoutInstructorInput>>
+    connectOrCreate?: Enumerable<UserCreateOrConnectWithoutInstructorInput>
+    createMany?: UserCreateManyInstructorInputEnvelope
+    connect?: Enumerable<UserWhereUniqueInput>
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -6129,6 +8406,20 @@ export namespace Prisma {
     deleteMany?: Enumerable<InstructorHistoryScalarWhereInput>
   }
 
+  export type UserUpdateManyWithoutInstructorInput = {
+    create?: XOR<Enumerable<UserCreateWithoutInstructorInput>, Enumerable<UserUncheckedCreateWithoutInstructorInput>>
+    connectOrCreate?: Enumerable<UserCreateOrConnectWithoutInstructorInput>
+    upsert?: Enumerable<UserUpsertWithWhereUniqueWithoutInstructorInput>
+    createMany?: UserCreateManyInstructorInputEnvelope
+    set?: Enumerable<UserWhereUniqueInput>
+    disconnect?: Enumerable<UserWhereUniqueInput>
+    delete?: Enumerable<UserWhereUniqueInput>
+    connect?: Enumerable<UserWhereUniqueInput>
+    update?: Enumerable<UserUpdateWithWhereUniqueWithoutInstructorInput>
+    updateMany?: Enumerable<UserUpdateManyWithWhereWithoutInstructorInput>
+    deleteMany?: Enumerable<UserScalarWhereInput>
+  }
+
   export type IntFieldUpdateOperationsInput = {
     set?: number
     increment?: number
@@ -6165,6 +8456,20 @@ export namespace Prisma {
     deleteMany?: Enumerable<InstructorHistoryScalarWhereInput>
   }
 
+  export type UserUncheckedUpdateManyWithoutInstructorInput = {
+    create?: XOR<Enumerable<UserCreateWithoutInstructorInput>, Enumerable<UserUncheckedCreateWithoutInstructorInput>>
+    connectOrCreate?: Enumerable<UserCreateOrConnectWithoutInstructorInput>
+    upsert?: Enumerable<UserUpsertWithWhereUniqueWithoutInstructorInput>
+    createMany?: UserCreateManyInstructorInputEnvelope
+    set?: Enumerable<UserWhereUniqueInput>
+    disconnect?: Enumerable<UserWhereUniqueInput>
+    delete?: Enumerable<UserWhereUniqueInput>
+    connect?: Enumerable<UserWhereUniqueInput>
+    update?: Enumerable<UserUpdateWithWhereUniqueWithoutInstructorInput>
+    updateMany?: Enumerable<UserUpdateManyWithWhereWithoutInstructorInput>
+    deleteMany?: Enumerable<UserScalarWhereInput>
+  }
+
   export type InstructorCreateNestedOneWithoutFileInput = {
     create?: XOR<InstructorCreateWithoutFileInput, InstructorUncheckedCreateWithoutFileInput>
     connectOrCreate?: InstructorCreateOrConnectWithoutFileInput
@@ -6195,6 +8500,88 @@ export namespace Prisma {
     upsert?: InstructorUpsertWithoutInstructorHistoryInput
     connect?: InstructorWhereUniqueInput
     update?: XOR<InstructorUpdateWithoutInstructorHistoryInput, InstructorUncheckedUpdateWithoutInstructorHistoryInput>
+  }
+
+  export type InstructorCreateNestedOneWithoutUserInput = {
+    create?: XOR<InstructorCreateWithoutUserInput, InstructorUncheckedCreateWithoutUserInput>
+    connectOrCreate?: InstructorCreateOrConnectWithoutUserInput
+    connect?: InstructorWhereUniqueInput
+  }
+
+  export type UserInvateCreateNestedOneWithoutUserInput = {
+    create?: XOR<UserInvateCreateWithoutUserInput, UserInvateUncheckedCreateWithoutUserInput>
+    connectOrCreate?: UserInvateCreateOrConnectWithoutUserInput
+    connect?: UserInvateWhereUniqueInput
+  }
+
+  export type UserInvateUncheckedCreateNestedOneWithoutUserInput = {
+    create?: XOR<UserInvateCreateWithoutUserInput, UserInvateUncheckedCreateWithoutUserInput>
+    connectOrCreate?: UserInvateCreateOrConnectWithoutUserInput
+    connect?: UserInvateWhereUniqueInput
+  }
+
+  export type EnumUserRoleFieldUpdateOperationsInput = {
+    set?: UserRole
+  }
+
+  export type EnumUserStatusFieldUpdateOperationsInput = {
+    set?: UserStatus
+  }
+
+  export type InstructorUpdateOneWithoutUserInput = {
+    create?: XOR<InstructorCreateWithoutUserInput, InstructorUncheckedCreateWithoutUserInput>
+    connectOrCreate?: InstructorCreateOrConnectWithoutUserInput
+    upsert?: InstructorUpsertWithoutUserInput
+    disconnect?: boolean
+    delete?: boolean
+    connect?: InstructorWhereUniqueInput
+    update?: XOR<InstructorUpdateWithoutUserInput, InstructorUncheckedUpdateWithoutUserInput>
+  }
+
+  export type UserInvateUpdateOneWithoutUserInput = {
+    create?: XOR<UserInvateCreateWithoutUserInput, UserInvateUncheckedCreateWithoutUserInput>
+    connectOrCreate?: UserInvateCreateOrConnectWithoutUserInput
+    upsert?: UserInvateUpsertWithoutUserInput
+    disconnect?: boolean
+    delete?: boolean
+    connect?: UserInvateWhereUniqueInput
+    update?: XOR<UserInvateUpdateWithoutUserInput, UserInvateUncheckedUpdateWithoutUserInput>
+  }
+
+  export type NullableIntFieldUpdateOperationsInput = {
+    set?: number | null
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+  }
+
+  export type UserInvateUncheckedUpdateOneWithoutUserInput = {
+    create?: XOR<UserInvateCreateWithoutUserInput, UserInvateUncheckedCreateWithoutUserInput>
+    connectOrCreate?: UserInvateCreateOrConnectWithoutUserInput
+    upsert?: UserInvateUpsertWithoutUserInput
+    disconnect?: boolean
+    delete?: boolean
+    connect?: UserInvateWhereUniqueInput
+    update?: XOR<UserInvateUpdateWithoutUserInput, UserInvateUncheckedUpdateWithoutUserInput>
+  }
+
+  export type UserCreateNestedOneWithoutInviteInput = {
+    create?: XOR<UserCreateWithoutInviteInput, UserUncheckedCreateWithoutInviteInput>
+    connectOrCreate?: UserCreateOrConnectWithoutInviteInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type BoolFieldUpdateOperationsInput = {
+    set?: boolean
+  }
+
+  export type UserUpdateOneRequiredWithoutInviteInput = {
+    create?: XOR<UserCreateWithoutInviteInput, UserUncheckedCreateWithoutInviteInput>
+    connectOrCreate?: UserCreateOrConnectWithoutInviteInput
+    upsert?: UserUpsertWithoutInviteInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<UserUpdateWithoutInviteInput, UserUncheckedUpdateWithoutInviteInput>
   }
 
   export type NestedIntFilter = {
@@ -6307,6 +8694,91 @@ export namespace Prisma {
     _max?: NestedDateTimeFilter
   }
 
+  export type NestedEnumUserRoleFilter = {
+    equals?: UserRole
+    in?: Enumerable<UserRole>
+    notIn?: Enumerable<UserRole>
+    not?: NestedEnumUserRoleFilter | UserRole
+  }
+
+  export type NestedEnumUserStatusFilter = {
+    equals?: UserStatus
+    in?: Enumerable<UserStatus>
+    notIn?: Enumerable<UserStatus>
+    not?: NestedEnumUserStatusFilter | UserStatus
+  }
+
+  export type NestedIntNullableFilter = {
+    equals?: number | null
+    in?: Enumerable<number> | null
+    notIn?: Enumerable<number> | null
+    lt?: number
+    lte?: number
+    gt?: number
+    gte?: number
+    not?: NestedIntNullableFilter | number | null
+  }
+
+  export type NestedEnumUserRoleWithAggregatesFilter = {
+    equals?: UserRole
+    in?: Enumerable<UserRole>
+    notIn?: Enumerable<UserRole>
+    not?: NestedEnumUserRoleWithAggregatesFilter | UserRole
+    _count?: NestedIntFilter
+    _min?: NestedEnumUserRoleFilter
+    _max?: NestedEnumUserRoleFilter
+  }
+
+  export type NestedEnumUserStatusWithAggregatesFilter = {
+    equals?: UserStatus
+    in?: Enumerable<UserStatus>
+    notIn?: Enumerable<UserStatus>
+    not?: NestedEnumUserStatusWithAggregatesFilter | UserStatus
+    _count?: NestedIntFilter
+    _min?: NestedEnumUserStatusFilter
+    _max?: NestedEnumUserStatusFilter
+  }
+
+  export type NestedIntNullableWithAggregatesFilter = {
+    equals?: number | null
+    in?: Enumerable<number> | null
+    notIn?: Enumerable<number> | null
+    lt?: number
+    lte?: number
+    gt?: number
+    gte?: number
+    not?: NestedIntNullableWithAggregatesFilter | number | null
+    _count?: NestedIntNullableFilter
+    _avg?: NestedFloatNullableFilter
+    _sum?: NestedIntNullableFilter
+    _min?: NestedIntNullableFilter
+    _max?: NestedIntNullableFilter
+  }
+
+  export type NestedFloatNullableFilter = {
+    equals?: number | null
+    in?: Enumerable<number> | null
+    notIn?: Enumerable<number> | null
+    lt?: number
+    lte?: number
+    gt?: number
+    gte?: number
+    not?: NestedFloatNullableFilter | number | null
+  }
+
+  export type NestedBoolFilter = {
+    equals?: boolean
+    not?: NestedBoolFilter | boolean
+  }
+
+  export type NestedBoolWithAggregatesFilter = {
+    equals?: boolean
+    not?: NestedBoolWithAggregatesFilter | boolean
+    _count?: NestedIntFilter
+    _min?: NestedBoolFilter
+    _max?: NestedBoolFilter
+  }
+
   export type FileCreateWithoutInstructorInput = {
     name: string
     date: Date | string
@@ -6350,6 +8822,33 @@ export namespace Prisma {
 
   export type InstructorHistoryCreateManyInstructorInputEnvelope = {
     data: Enumerable<InstructorHistoryCreateManyInstructorInput>
+    skipDuplicates?: boolean
+  }
+
+  export type UserCreateWithoutInstructorInput = {
+    role?: UserRole
+    login: string
+    password: string
+    status: UserStatus
+    invite?: UserInvateCreateNestedOneWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutInstructorInput = {
+    id?: number
+    role?: UserRole
+    login: string
+    password: string
+    status: UserStatus
+    invite?: UserInvateUncheckedCreateNestedOneWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutInstructorInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutInstructorInput, UserUncheckedCreateWithoutInstructorInput>
+  }
+
+  export type UserCreateManyInstructorInputEnvelope = {
+    data: Enumerable<UserCreateManyInstructorInput>
     skipDuplicates?: boolean
   }
 
@@ -6407,10 +8906,39 @@ export namespace Prisma {
     instructorId?: IntFilter | number
   }
 
+  export type UserUpsertWithWhereUniqueWithoutInstructorInput = {
+    where: UserWhereUniqueInput
+    update: XOR<UserUpdateWithoutInstructorInput, UserUncheckedUpdateWithoutInstructorInput>
+    create: XOR<UserCreateWithoutInstructorInput, UserUncheckedCreateWithoutInstructorInput>
+  }
+
+  export type UserUpdateWithWhereUniqueWithoutInstructorInput = {
+    where: UserWhereUniqueInput
+    data: XOR<UserUpdateWithoutInstructorInput, UserUncheckedUpdateWithoutInstructorInput>
+  }
+
+  export type UserUpdateManyWithWhereWithoutInstructorInput = {
+    where: UserScalarWhereInput
+    data: XOR<UserUpdateManyMutationInput, UserUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type UserScalarWhereInput = {
+    AND?: Enumerable<UserScalarWhereInput>
+    OR?: Enumerable<UserScalarWhereInput>
+    NOT?: Enumerable<UserScalarWhereInput>
+    id?: IntFilter | number
+    role?: EnumUserRoleFilter | UserRole
+    login?: StringFilter | string
+    password?: StringFilter | string
+    status?: EnumUserStatusFilter | UserStatus
+    instructorId?: IntNullableFilter | number | null
+  }
+
   export type InstructorCreateWithoutFileInput = {
     name: string
     price: number
     InstructorHistory?: InstructorHistoryCreateNestedManyWithoutInstructorInput
+    User?: UserCreateNestedManyWithoutInstructorInput
   }
 
   export type InstructorUncheckedCreateWithoutFileInput = {
@@ -6418,6 +8946,7 @@ export namespace Prisma {
     name: string
     price: number
     InstructorHistory?: InstructorHistoryUncheckedCreateNestedManyWithoutInstructorInput
+    User?: UserUncheckedCreateNestedManyWithoutInstructorInput
   }
 
   export type InstructorCreateOrConnectWithoutFileInput = {
@@ -6434,6 +8963,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     price?: FloatFieldUpdateOperationsInput | number
     InstructorHistory?: InstructorHistoryUpdateManyWithoutInstructorInput
+    User?: UserUpdateManyWithoutInstructorInput
   }
 
   export type InstructorUncheckedUpdateWithoutFileInput = {
@@ -6441,12 +8971,14 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     price?: FloatFieldUpdateOperationsInput | number
     InstructorHistory?: InstructorHistoryUncheckedUpdateManyWithoutInstructorInput
+    User?: UserUncheckedUpdateManyWithoutInstructorInput
   }
 
   export type InstructorCreateWithoutInstructorHistoryInput = {
     name: string
     price: number
     File?: FileCreateNestedManyWithoutInstructorInput
+    User?: UserCreateNestedManyWithoutInstructorInput
   }
 
   export type InstructorUncheckedCreateWithoutInstructorHistoryInput = {
@@ -6454,6 +8986,7 @@ export namespace Prisma {
     name: string
     price: number
     File?: FileUncheckedCreateNestedManyWithoutInstructorInput
+    User?: UserUncheckedCreateNestedManyWithoutInstructorInput
   }
 
   export type InstructorCreateOrConnectWithoutInstructorHistoryInput = {
@@ -6470,6 +9003,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     price?: FloatFieldUpdateOperationsInput | number
     File?: FileUpdateManyWithoutInstructorInput
+    User?: UserUpdateManyWithoutInstructorInput
   }
 
   export type InstructorUncheckedUpdateWithoutInstructorHistoryInput = {
@@ -6477,6 +9011,121 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     price?: FloatFieldUpdateOperationsInput | number
     File?: FileUncheckedUpdateManyWithoutInstructorInput
+    User?: UserUncheckedUpdateManyWithoutInstructorInput
+  }
+
+  export type InstructorCreateWithoutUserInput = {
+    name: string
+    price: number
+    File?: FileCreateNestedManyWithoutInstructorInput
+    InstructorHistory?: InstructorHistoryCreateNestedManyWithoutInstructorInput
+  }
+
+  export type InstructorUncheckedCreateWithoutUserInput = {
+    id?: number
+    name: string
+    price: number
+    File?: FileUncheckedCreateNestedManyWithoutInstructorInput
+    InstructorHistory?: InstructorHistoryUncheckedCreateNestedManyWithoutInstructorInput
+  }
+
+  export type InstructorCreateOrConnectWithoutUserInput = {
+    where: InstructorWhereUniqueInput
+    create: XOR<InstructorCreateWithoutUserInput, InstructorUncheckedCreateWithoutUserInput>
+  }
+
+  export type UserInvateCreateWithoutUserInput = {
+    hash: string
+    status: boolean
+  }
+
+  export type UserInvateUncheckedCreateWithoutUserInput = {
+    hash: string
+    status: boolean
+  }
+
+  export type UserInvateCreateOrConnectWithoutUserInput = {
+    where: UserInvateWhereUniqueInput
+    create: XOR<UserInvateCreateWithoutUserInput, UserInvateUncheckedCreateWithoutUserInput>
+  }
+
+  export type InstructorUpsertWithoutUserInput = {
+    update: XOR<InstructorUpdateWithoutUserInput, InstructorUncheckedUpdateWithoutUserInput>
+    create: XOR<InstructorCreateWithoutUserInput, InstructorUncheckedCreateWithoutUserInput>
+  }
+
+  export type InstructorUpdateWithoutUserInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    price?: FloatFieldUpdateOperationsInput | number
+    File?: FileUpdateManyWithoutInstructorInput
+    InstructorHistory?: InstructorHistoryUpdateManyWithoutInstructorInput
+  }
+
+  export type InstructorUncheckedUpdateWithoutUserInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    price?: FloatFieldUpdateOperationsInput | number
+    File?: FileUncheckedUpdateManyWithoutInstructorInput
+    InstructorHistory?: InstructorHistoryUncheckedUpdateManyWithoutInstructorInput
+  }
+
+  export type UserInvateUpsertWithoutUserInput = {
+    update: XOR<UserInvateUpdateWithoutUserInput, UserInvateUncheckedUpdateWithoutUserInput>
+    create: XOR<UserInvateCreateWithoutUserInput, UserInvateUncheckedCreateWithoutUserInput>
+  }
+
+  export type UserInvateUpdateWithoutUserInput = {
+    hash?: StringFieldUpdateOperationsInput | string
+    status?: BoolFieldUpdateOperationsInput | boolean
+  }
+
+  export type UserInvateUncheckedUpdateWithoutUserInput = {
+    hash?: StringFieldUpdateOperationsInput | string
+    status?: BoolFieldUpdateOperationsInput | boolean
+  }
+
+  export type UserCreateWithoutInviteInput = {
+    role?: UserRole
+    login: string
+    password: string
+    status: UserStatus
+    instructor?: InstructorCreateNestedOneWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutInviteInput = {
+    id?: number
+    role?: UserRole
+    login: string
+    password: string
+    status: UserStatus
+    instructorId?: number | null
+  }
+
+  export type UserCreateOrConnectWithoutInviteInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutInviteInput, UserUncheckedCreateWithoutInviteInput>
+  }
+
+  export type UserUpsertWithoutInviteInput = {
+    update: XOR<UserUpdateWithoutInviteInput, UserUncheckedUpdateWithoutInviteInput>
+    create: XOR<UserCreateWithoutInviteInput, UserUncheckedCreateWithoutInviteInput>
+  }
+
+  export type UserUpdateWithoutInviteInput = {
+    role?: EnumUserRoleFieldUpdateOperationsInput | UserRole
+    login?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    status?: EnumUserStatusFieldUpdateOperationsInput | UserStatus
+    instructor?: InstructorUpdateOneWithoutUserInput
+  }
+
+  export type UserUncheckedUpdateWithoutInviteInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    role?: EnumUserRoleFieldUpdateOperationsInput | UserRole
+    login?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    status?: EnumUserStatusFieldUpdateOperationsInput | UserStatus
+    instructorId?: NullableIntFieldUpdateOperationsInput | number | null
   }
 
   export type FileCreateManyInstructorInput = {
@@ -6491,6 +9140,14 @@ export namespace Prisma {
     id?: number
     date: Date | string
     sum: number
+  }
+
+  export type UserCreateManyInstructorInput = {
+    id?: number
+    role?: UserRole
+    login: string
+    password: string
+    status: UserStatus
   }
 
   export type FileUpdateWithoutInstructorInput = {
@@ -6531,6 +9188,31 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     sum?: FloatFieldUpdateOperationsInput | number
+  }
+
+  export type UserUpdateWithoutInstructorInput = {
+    role?: EnumUserRoleFieldUpdateOperationsInput | UserRole
+    login?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    status?: EnumUserStatusFieldUpdateOperationsInput | UserStatus
+    invite?: UserInvateUpdateOneWithoutUserInput
+  }
+
+  export type UserUncheckedUpdateWithoutInstructorInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    role?: EnumUserRoleFieldUpdateOperationsInput | UserRole
+    login?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    status?: EnumUserStatusFieldUpdateOperationsInput | UserStatus
+    invite?: UserInvateUncheckedUpdateOneWithoutUserInput
+  }
+
+  export type UserUncheckedUpdateManyWithoutUserInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    role?: EnumUserRoleFieldUpdateOperationsInput | UserRole
+    login?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    status?: EnumUserStatusFieldUpdateOperationsInput | UserStatus
   }
 
 

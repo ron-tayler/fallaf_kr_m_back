@@ -109,18 +109,46 @@ exports.Prisma.DevScalarFieldEnum = makeEnum({
   price: 'price'
 });
 
+exports.Prisma.UserScalarFieldEnum = makeEnum({
+  id: 'id',
+  role: 'role',
+  login: 'login',
+  password: 'password',
+  status: 'status',
+  instructorId: 'instructorId'
+});
+
+exports.Prisma.UserInvateScalarFieldEnum = makeEnum({
+  userId: 'userId',
+  hash: 'hash',
+  status: 'status'
+});
+
 exports.Prisma.SortOrder = makeEnum({
   asc: 'asc',
   desc: 'desc'
 });
+exports.UserRole = makeEnum({
+  Admin: 'Admin',
+  Manager: 'Manager',
+  Instructor: 'Instructor',
+  User: 'User'
+});
 
+exports.UserStatus = makeEnum({
+  New: 'New',
+  Active: 'Active',
+  Deactive: 'Deactive'
+});
 
 exports.Prisma.ModelName = makeEnum({
   Instructor: 'Instructor',
   File: 'File',
   InstructorHistory: 'InstructorHistory',
   DevHistory: 'DevHistory',
-  Dev: 'Dev'
+  Dev: 'Dev',
+  User: 'User',
+  UserInvate: 'UserInvate'
 });
 
 /**

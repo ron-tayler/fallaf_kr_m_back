@@ -8,7 +8,7 @@ import {
     BaseHttpController, requestParam,
     requestBody, httpPost
 } from "inversify-express-utils";
-import {PrismaClient} from "@/../prisma/generated/client"
+import {PrismaClient, type File} from "@/../prisma/generated/client"
 import {inject} from "inversify";
 import {Request, Response} from "express";
 import * as io_ts from "io-ts";
@@ -83,7 +83,7 @@ export class Controller_API_Money extends BaseHttpController {
     }
 
     @httpGet("/files")
-    async getFiles(){
+    async getFiles(@request() req: Request){
 
         const instructors = await this.prisma.instructor.findMany({
             select:{
@@ -94,7 +94,7 @@ export class Controller_API_Money extends BaseHttpController {
             }
         })
 
-        const files: any[] = []
+        let files: any[] = []
 
         instructors.forEach(inst=>{
             let inst_balance = inst.price
@@ -120,6 +120,20 @@ export class Controller_API_Money extends BaseHttpController {
                 })
             files.push(...inst_files)
         })
+
+        if(req.session.user_role=="Instructor"){
+            const user = await this.prisma.user.findUnique({
+                where:{id: req.session.user_id ?? 0},
+                select:{
+                    instructor: true
+                }
+            })
+
+            if(user){
+                const inst_id = user.instructor?.id ?? 0
+                files = files.filter(file=>file.instructor_id==inst_id)
+            }
+        }
 
         return files
     }

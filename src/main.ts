@@ -10,30 +10,24 @@ import console from "console";
 import * as process from "process";
 import * as path from "path";
 import express from "express";
+import * as prettyjson from "prettyjson";
+import {pipe} from "fp-ts/lib/function"
 
-import {Container} from "inversify"
-import {InversifyExpressServer} from 'inversify-express-utils';
-import {buildProviderModule} from "inversify-binding-decorators";
-import {PrismaClient} from "@/../prisma/generated/client"
-
-import "@/Controller/API/Money";
+import {getRouteInfo, InversifyExpressServer} from 'inversify-express-utils';
+import {UserRole} from "@/../prisma/generated/client";
+import {container} from "@/container";
 
 const session_token = process.env?.SESSION_TOKEN ?? ""
 const server_port = process.env?.SERVER_PORT ?? ""
 
-const prisma = new PrismaClient();
-
 declare module "express-session" {
     interface SessionData {
         user_id: number
+        user_role: UserRole
     }
 }
 
-const container = new Container()
-container.load(buildProviderModule());
 const server = new InversifyExpressServer(container)
-
-container.bind("Prisma").toConstantValue(prisma);
 
 server.setConfig(app=>{
     app.use(session({
@@ -60,4 +54,11 @@ app.get("*",(req,res)=>{
 
 app.listen(server_port,()=>{
     console.log("Start listening on port "+server_port)
+    pipe(
+        container,
+        getRouteInfo,
+        routes=>({routes}),
+        prettyjson.render,
+        console.log
+    )
 })

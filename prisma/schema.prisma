@@ -15,6 +15,7 @@ model Instructor {
   price             Float
   File              File[]
   InstructorHistory InstructorHistory[]
+  User              User[]
 }
 
 model File {
@@ -45,4 +46,37 @@ model DevHistory {
 model Dev {
   id    Int   @id @default(autoincrement())
   price Float
+}
+
+enum UserRole {
+  Admin
+  Manager
+  Instructor
+  User
+}
+
+enum UserStatus {
+  New
+  Active
+  Deactive
+}
+
+model User {
+  id           Int        @id @default(autoincrement())
+  role         UserRole   @default(User)
+  login        String     @unique @db.VarChar(255)
+  password     String     @db.VarChar(255)
+  status       UserStatus
+  instructorId Int?
+
+  instructor Instructor? @relation(fields: [instructorId], references: [id])
+  invite     UserInvate?
+}
+
+model UserInvate {
+  userId Int     @unique
+  hash   String  @unique @db.VarChar(255)
+  status Boolean
+
+  user User @relation(fields: [userId], references: [id])
 }
