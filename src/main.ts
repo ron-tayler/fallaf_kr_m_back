@@ -32,7 +32,8 @@ const server = new InversifyExpressServer(container)
 server.setConfig(app=>{
     app.use(session({
         cookie:{
-            secure: false
+            secure: false,
+            maxAge: 1000*60*60*24*7
         },
         resave: false,
         saveUninitialized: false,
