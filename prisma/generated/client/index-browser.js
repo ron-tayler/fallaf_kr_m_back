@@ -124,6 +124,13 @@ exports.Prisma.UserInvateScalarFieldEnum = makeEnum({
   status: 'status'
 });
 
+exports.Prisma.SessionScalarFieldEnum = makeEnum({
+  id: 'id',
+  sid: 'sid',
+  data: 'data',
+  expiresAt: 'expiresAt'
+});
+
 exports.Prisma.SortOrder = makeEnum({
   asc: 'asc',
   desc: 'desc'
@@ -148,7 +155,8 @@ exports.Prisma.ModelName = makeEnum({
   DevHistory: 'DevHistory',
   Dev: 'Dev',
   User: 'User',
-  UserInvate: 'UserInvate'
+  UserInvate: 'UserInvate',
+  Session: 'Session'
 });
 
 /**

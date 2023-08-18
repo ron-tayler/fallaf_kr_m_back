@@ -22,6 +22,7 @@
   "license": "ISC",
   "dependencies": {
     "@prisma/client": "^3.12.0",
+    "@quixo3/prisma-session-store": "^3.1.13",
     "body-parser": "^1.20.1",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",

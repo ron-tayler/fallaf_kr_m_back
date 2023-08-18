@@ -12,6 +12,7 @@ import * as path from "path";
 import express from "express";
 import * as prettyjson from "prettyjson";
 import {pipe} from "fp-ts/lib/function"
+import { PrismaSessionStore } from '@quixo3/prisma-session-store';
 
 import {getRouteInfo, InversifyExpressServer} from 'inversify-express-utils';
 import {UserRole} from "@/../prisma/generated/client";
@@ -37,7 +38,8 @@ server.setConfig(app=>{
         },
         resave: false,
         saveUninitialized: false,
-        secret: session_token
+        secret: session_token,
+        store: container.get<PrismaSessionStore>("SessionStore")
     }))
     app.use(bodyParser.urlencoded({extended: true}));
     app.use(bodyParser.json());
@@ -55,11 +57,11 @@ app.get("*",(req,res)=>{
 
 app.listen(server_port,()=>{
     console.log("Start listening on port "+server_port)
-    pipe(
-        container,
-        getRouteInfo,
-        routes=>({routes}),
-        prettyjson.render,
-        console.log
-    )
+    // pipe(
+    //     container,
+    //     getRouteInfo,
+    //     routes=>({routes}),
+    //     prettyjson.render,
+    //     console.log
+    // )
 })
