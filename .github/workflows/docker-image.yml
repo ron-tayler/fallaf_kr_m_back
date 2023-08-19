@@ -35,6 +35,7 @@ jobs:
 
   prisma_migrate:
     name: Prisma migrate prod
+    needs: build
     runs-on: ubuntu-latest
     environment: Prod
     steps:
@@ -51,6 +52,7 @@ jobs:
 
   deploy_prod:
     name: deploy prod
+    needs: prisma_migrate
     runs-on: ubuntu-latest
     environment: Prod
     steps:
