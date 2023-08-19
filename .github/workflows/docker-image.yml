@@ -35,6 +35,7 @@ jobs:
   prisma_migrate:
     name: Prisma migrate prod
     runs-on: ubuntu-latest
+    environment: Prod
     steps:
       - name: Get tag
         id: tag
@@ -50,6 +51,7 @@ jobs:
   deploy_prod:
     name: deploy prod
     runs-on: ubuntu-latest
+    environment: Prod
     steps:
       - name: Get tag
         id: tag
