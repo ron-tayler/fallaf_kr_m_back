@@ -11,6 +11,8 @@ import process from "process";
 
 import "@/Controller/API/Money";
 import "@/Controller/API/User";
+import "@/Controller/API/FreeKassa";
+import "@/Controller/PublicApi/FreeKassa";
 
 const merchant_id = process.env?.FREE_KASSA_MERCHANT_ID ?? "0"
 const secret_1 = process.env?.FREE_KASSA_SECRET_1 ?? "0"
