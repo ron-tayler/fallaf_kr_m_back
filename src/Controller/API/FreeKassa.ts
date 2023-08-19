@@ -26,7 +26,7 @@ export class Controller_API_FreeKassa extends BaseHttpController {
         // Получаем сумму оплаты из запроса
         const amount = 500
 
-        this.free_kassa.getPayUrl(order_id,amount,{
+        return this.free_kassa.getPayUrl(order_id,amount,{
             us_inst_id: inst_id.toString()
         })
     }
