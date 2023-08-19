@@ -2,11 +2,8 @@ name: Docker Image CI
 
 on:
   push:
-    branches: [ "master" ]
     tags:
       - '^v[0-9]+(\.[0-9]+)*'
-  pull_request:
-    branches: [ "master" ]
 
 jobs:
 
@@ -14,9 +11,54 @@ jobs:
     name: Build docker image
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag ice-dev.ru:5000/ron_tayler/fallaf_kr_m_back:latest
-    - name: Push image
-      run: docker push ice-dev.ru:5000/ron_tayler/fallaf_kr_m_back:latest
+      - name: Get tag
+        id: tag
+        uses: dawidd6/action-get-tag@v1
+      - name: Build the Docker image
+        env:
+          REG: ${{ secrets.REGISTRY_URL }}
+          IMG: ${{ secrets.IMAGE_NAME }}
+          TAG: ${{ steps.tag.outputs.tag }}
+        uses: actions/checkout@v3
+        run: docker build . --file Dockerfile --tag "$REG/$IMG:latest" --tag "$REG/$IMG:$TAG"
+      - name: Push image tag
+        env:
+          REG: ${{ secrets.REGISTRY_URL }}
+          IMG: ${{ secrets.IMAGE_NAME }}
+          TAG: ${{ steps.tag.outputs.tag }}
+        run: docker push "$REG/$IMG:$TAG"
+      - name: Push image latest
+        env:
+          REG: ${{ secrets.REGISTRY_URL }}
+          IMG: ${{ secrets.IMAGE_NAME }}
+        run: docker push "$REG/$IMG:latest"
 
+  prisma_migrate:
+    name: Prisma migrate prod
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get tag
+        id: tag
+        uses: dawidd6/action-get-tag@v1
+      - name: Curl portainer
+        env:
+          URL: ${{ secrets.PORTAINER_MIGRATE_URL }}
+          TAG: ${{ steps.tag.outputs.tag }}
+        run: |
+          curl --request POST \
+          --url "$URL?tag=$TAG" \
+
+  deploy_prod:
+    name: deploy prod
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get tag
+        id: tag
+        uses: dawidd6/action-get-tag@v1
+      - name: Curl portainer
+        env:
+          URL: ${{ secrets.PORTAINER_URL }}
+          TAG: ${{ steps.tag.outputs.tag }}
+        run: |
+          curl --request POST \
+          --url "$URL?tag=$TAG" \
