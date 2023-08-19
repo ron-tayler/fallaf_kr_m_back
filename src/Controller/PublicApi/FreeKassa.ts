@@ -10,7 +10,7 @@ import {Request} from "express";
 import io_ts from "io-ts"
 
 @controller("/public-api/free-kassa")
-export class Controller_API_User extends BaseHttpController {
+export class Controller_PublicAPI_FreeKassa extends BaseHttpController {
 
     @inject<PrismaClient>("Prisma")
     private prisma!: PrismaClient

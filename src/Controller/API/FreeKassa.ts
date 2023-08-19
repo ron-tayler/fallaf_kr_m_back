@@ -8,7 +8,7 @@ import {PrismaClient} from "../../../prisma/generated/client";
 import {FreeKassa} from "@/lib/FreeKassa";
 
 @controller("/api/free-kassa")
-export class Controller_API_User extends BaseHttpController {
+export class Controller_API_FreeKassa extends BaseHttpController {
 
     @inject<PrismaClient>("Prisma")
     private prisma!: PrismaClient
