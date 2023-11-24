@@ -1,4 +1,4 @@
-FROM node:16.15
+FROM node:20.8.0
 
 RUN npm i -g npm
 
