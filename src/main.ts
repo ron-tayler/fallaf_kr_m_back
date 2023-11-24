@@ -6,7 +6,6 @@ import "reflect-metadata";
 
 import session from "express-session"
 import bodyParser from 'body-parser';
-import console from "console";
 import * as process from "process";
 import * as path from "path";
 import express from "express";

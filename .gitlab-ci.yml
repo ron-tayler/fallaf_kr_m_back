@@ -1,0 +1,39 @@
+# You can override the included template(s) by including variable overrides
+# SAST customization: https://docs.gitlab.com/ee/user/application_security/sast/#customizing-the-sast-settings
+# Secret Detection customization: https://docs.gitlab.com/ee/user/application_security/secret_detection/#customizing-settings
+# Dependency Scanning customization: https://docs.gitlab.com/ee/user/application_security/dependency_scanning/#customizing-the-dependency-scanning-settings
+# Container Scanning customization: https://docs.gitlab.com/ee/user/application_security/container_scanning/#customizing-the-container-scanning-settings
+# Note that environment variables can be set in several places
+# See https://docs.gitlab.com/ee/ci/variables/#cicd-variable-precedence
+stages:
+- build
+- deploy-prod
+
+docker-build:
+  image: docker:latest
+  stage: build
+  services:
+  - docker:dind
+  tags:
+  - portainer.pve
+  only:
+  - tags
+  except:
+  - branches
+  script:
+  - docker build -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_TAG" -f ./Dockerfile .
+  - docker login -u "${CI_REGISTRY_USER}" -p "${CI_REGISTRY_PASSWORD}" "${CI_REGISTRY}"
+  - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_TAG
+
+deploy-prod:
+  image: curlimages/curl
+  stage: deploy-prod
+  when: manual
+  only:
+  - tags
+  except:
+  - branches
+  script:
+  - curl -k --request POST "${PORTAINER_WEBHOOK}?tag=${CI_COMMIT_TAG}"
+  environment:
+    name: prod-server
