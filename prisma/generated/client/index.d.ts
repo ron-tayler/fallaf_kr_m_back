@@ -32,6 +32,7 @@ export type File = {
   date: Date
   fallaf_price: number
   dev_price: number
+  paid: number
   instructorId: number
 }
 
@@ -44,6 +45,17 @@ export type InstructorHistory = {
   date: Date
   sum: number
   instructorId: number
+}
+
+/**
+ * Model FilePayment
+ * 
+ */
+export type FilePayment = {
+  id: number
+  sum: number
+  fileId: number
+  historyId: number
 }
 
 /**
@@ -295,6 +307,16 @@ export class PrismaClient<
     * ```
     */
   get instructorHistory(): Prisma.InstructorHistoryDelegate<GlobalReject>;
+
+  /**
+   * `prisma.filePayment`: Exposes CRUD operations for the **FilePayment** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more FilePayments
+    * const filePayments = await prisma.filePayment.findMany()
+    * ```
+    */
+  get filePayment(): Prisma.FilePaymentDelegate<GlobalReject>;
 
   /**
    * `prisma.devHistory`: Exposes CRUD operations for the **DevHistory** model.
@@ -764,6 +786,7 @@ export namespace Prisma {
     Instructor: 'Instructor',
     File: 'File',
     InstructorHistory: 'InstructorHistory',
+    FilePayment: 'FilePayment',
     DevHistory: 'DevHistory',
     Dev: 'Dev',
     User: 'User',
@@ -975,6 +998,104 @@ export namespace Prisma {
      * 
     **/
     select?: InstructorCountOutputTypeSelect | null
+  }
+
+
+
+  /**
+   * Count Type FileCountOutputType
+   */
+
+
+  export type FileCountOutputType = {
+    FilePayment: number
+  }
+
+  export type FileCountOutputTypeSelect = {
+    FilePayment?: boolean
+  }
+
+  export type FileCountOutputTypeGetPayload<
+    S extends boolean | null | undefined | FileCountOutputTypeArgs,
+    U = keyof S
+      > = S extends true
+        ? FileCountOutputType
+    : S extends undefined
+    ? never
+    : S extends FileCountOutputTypeArgs
+    ?'include' extends U
+    ? FileCountOutputType 
+    : 'select' extends U
+    ? {
+    [P in TrueKeys<S['select']>]:
+    P extends keyof FileCountOutputType ? FileCountOutputType[P] : never
+  } 
+    : FileCountOutputType
+  : FileCountOutputType
+
+
+
+
+  // Custom InputTypes
+
+  /**
+   * FileCountOutputType without action
+   */
+  export type FileCountOutputTypeArgs = {
+    /**
+     * Select specific fields to fetch from the FileCountOutputType
+     * 
+    **/
+    select?: FileCountOutputTypeSelect | null
+  }
+
+
+
+  /**
+   * Count Type InstructorHistoryCountOutputType
+   */
+
+
+  export type InstructorHistoryCountOutputType = {
+    FilePayment: number
+  }
+
+  export type InstructorHistoryCountOutputTypeSelect = {
+    FilePayment?: boolean
+  }
+
+  export type InstructorHistoryCountOutputTypeGetPayload<
+    S extends boolean | null | undefined | InstructorHistoryCountOutputTypeArgs,
+    U = keyof S
+      > = S extends true
+        ? InstructorHistoryCountOutputType
+    : S extends undefined
+    ? never
+    : S extends InstructorHistoryCountOutputTypeArgs
+    ?'include' extends U
+    ? InstructorHistoryCountOutputType 
+    : 'select' extends U
+    ? {
+    [P in TrueKeys<S['select']>]:
+    P extends keyof InstructorHistoryCountOutputType ? InstructorHistoryCountOutputType[P] : never
+  } 
+    : InstructorHistoryCountOutputType
+  : InstructorHistoryCountOutputType
+
+
+
+
+  // Custom InputTypes
+
+  /**
+   * InstructorHistoryCountOutputType without action
+   */
+  export type InstructorHistoryCountOutputTypeArgs = {
+    /**
+     * Select specific fields to fetch from the InstructorHistoryCountOutputType
+     * 
+    **/
+    select?: InstructorHistoryCountOutputTypeSelect | null
   }
 
 
@@ -1902,6 +2023,7 @@ export namespace Prisma {
     id: number | null
     fallaf_price: number | null
     dev_price: number | null
+    paid: number | null
     instructorId: number | null
   }
 
@@ -1909,6 +2031,7 @@ export namespace Prisma {
     id: number | null
     fallaf_price: number | null
     dev_price: number | null
+    paid: number | null
     instructorId: number | null
   }
 
@@ -1918,6 +2041,7 @@ export namespace Prisma {
     date: Date | null
     fallaf_price: number | null
     dev_price: number | null
+    paid: number | null
     instructorId: number | null
   }
 
@@ -1927,6 +2051,7 @@ export namespace Prisma {
     date: Date | null
     fallaf_price: number | null
     dev_price: number | null
+    paid: number | null
     instructorId: number | null
   }
 
@@ -1936,6 +2061,7 @@ export namespace Prisma {
     date: number
     fallaf_price: number
     dev_price: number
+    paid: number
     instructorId: number
     _all: number
   }
@@ -1945,6 +2071,7 @@ export namespace Prisma {
     id?: true
     fallaf_price?: true
     dev_price?: true
+    paid?: true
     instructorId?: true
   }
 
@@ -1952,6 +2079,7 @@ export namespace Prisma {
     id?: true
     fallaf_price?: true
     dev_price?: true
+    paid?: true
     instructorId?: true
   }
 
@@ -1961,6 +2089,7 @@ export namespace Prisma {
     date?: true
     fallaf_price?: true
     dev_price?: true
+    paid?: true
     instructorId?: true
   }
 
@@ -1970,6 +2099,7 @@ export namespace Prisma {
     date?: true
     fallaf_price?: true
     dev_price?: true
+    paid?: true
     instructorId?: true
   }
 
@@ -1979,6 +2109,7 @@ export namespace Prisma {
     date?: true
     fallaf_price?: true
     dev_price?: true
+    paid?: true
     instructorId?: true
     _all?: true
   }
@@ -2081,6 +2212,7 @@ export namespace Prisma {
     date: Date
     fallaf_price: number
     dev_price: number
+    paid: number
     instructorId: number
     _count: FileCountAggregateOutputType | null
     _avg: FileAvgAggregateOutputType | null
@@ -2110,11 +2242,16 @@ export namespace Prisma {
     date?: boolean
     fallaf_price?: boolean
     dev_price?: boolean
+    paid?: boolean
     instructorId?: boolean
+    FilePayment?: boolean | FilePaymentFindManyArgs
+    _count?: boolean | FileCountOutputTypeArgs
   }
 
   export type FileInclude = {
     instructor?: boolean | InstructorArgs
+    FilePayment?: boolean | FilePaymentFindManyArgs
+    _count?: boolean | FileCountOutputTypeArgs
   }
 
   export type FileGetPayload<
@@ -2128,12 +2265,16 @@ export namespace Prisma {
     ?'include' extends U
     ? File  & {
     [P in TrueKeys<S['include']>]:
-        P extends 'instructor' ? InstructorGetPayload<S['include'][P]> :  never
+        P extends 'instructor' ? InstructorGetPayload<S['include'][P]> :
+        P extends 'FilePayment' ? Array < FilePaymentGetPayload<S['include'][P]>>  :
+        P extends '_count' ? FileCountOutputTypeGetPayload<S['include'][P]> :  never
   } 
     : 'select' extends U
     ? {
     [P in TrueKeys<S['select']>]:
-        P extends 'instructor' ? InstructorGetPayload<S['select'][P]> :  P extends keyof File ? File[P] : never
+        P extends 'instructor' ? InstructorGetPayload<S['select'][P]> :
+        P extends 'FilePayment' ? Array < FilePaymentGetPayload<S['select'][P]>>  :
+        P extends '_count' ? FileCountOutputTypeGetPayload<S['select'][P]> :  P extends keyof File ? File[P] : never
   } 
     : File
   : File
@@ -2474,6 +2615,8 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: 'PrismaClientPromise';
 
     instructor<T extends InstructorArgs = {}>(args?: Subset<T, InstructorArgs>): CheckSelect<T, Prisma__InstructorClient<Instructor | null >, Prisma__InstructorClient<InstructorGetPayload<T> | null >>;
+
+    FilePayment<T extends FilePaymentFindManyArgs = {}>(args?: Subset<T, FilePaymentFindManyArgs>): CheckSelect<T, PrismaPromise<Array<FilePayment>>, PrismaPromise<Array<FilePaymentGetPayload<T>>>>;
 
     private get _document();
     /**
@@ -3009,10 +3152,14 @@ export namespace Prisma {
     date?: boolean
     sum?: boolean
     instructorId?: boolean
+    FilePayment?: boolean | FilePaymentFindManyArgs
+    _count?: boolean | InstructorHistoryCountOutputTypeArgs
   }
 
   export type InstructorHistoryInclude = {
     instructor?: boolean | InstructorArgs
+    FilePayment?: boolean | FilePaymentFindManyArgs
+    _count?: boolean | InstructorHistoryCountOutputTypeArgs
   }
 
   export type InstructorHistoryGetPayload<
@@ -3026,12 +3173,16 @@ export namespace Prisma {
     ?'include' extends U
     ? InstructorHistory  & {
     [P in TrueKeys<S['include']>]:
-        P extends 'instructor' ? InstructorGetPayload<S['include'][P]> :  never
+        P extends 'instructor' ? InstructorGetPayload<S['include'][P]> :
+        P extends 'FilePayment' ? Array < FilePaymentGetPayload<S['include'][P]>>  :
+        P extends '_count' ? InstructorHistoryCountOutputTypeGetPayload<S['include'][P]> :  never
   } 
     : 'select' extends U
     ? {
     [P in TrueKeys<S['select']>]:
-        P extends 'instructor' ? InstructorGetPayload<S['select'][P]> :  P extends keyof InstructorHistory ? InstructorHistory[P] : never
+        P extends 'instructor' ? InstructorGetPayload<S['select'][P]> :
+        P extends 'FilePayment' ? Array < FilePaymentGetPayload<S['select'][P]>>  :
+        P extends '_count' ? InstructorHistoryCountOutputTypeGetPayload<S['select'][P]> :  P extends keyof InstructorHistory ? InstructorHistory[P] : never
   } 
     : InstructorHistory
   : InstructorHistory
@@ -3373,6 +3524,8 @@ export namespace Prisma {
 
     instructor<T extends InstructorArgs = {}>(args?: Subset<T, InstructorArgs>): CheckSelect<T, Prisma__InstructorClient<Instructor | null >, Prisma__InstructorClient<InstructorGetPayload<T> | null >>;
 
+    FilePayment<T extends FilePaymentFindManyArgs = {}>(args?: Subset<T, FilePaymentFindManyArgs>): CheckSelect<T, PrismaPromise<Array<FilePayment>>, PrismaPromise<Array<FilePaymentGetPayload<T>>>>;
+
     private get _document();
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -3697,6 +3850,914 @@ export namespace Prisma {
      * 
     **/
     include?: InstructorHistoryInclude | null
+  }
+
+
+
+  /**
+   * Model FilePayment
+   */
+
+
+  export type AggregateFilePayment = {
+    _count: FilePaymentCountAggregateOutputType | null
+    _avg: FilePaymentAvgAggregateOutputType | null
+    _sum: FilePaymentSumAggregateOutputType | null
+    _min: FilePaymentMinAggregateOutputType | null
+    _max: FilePaymentMaxAggregateOutputType | null
+  }
+
+  export type FilePaymentAvgAggregateOutputType = {
+    id: number | null
+    sum: number | null
+    fileId: number | null
+    historyId: number | null
+  }
+
+  export type FilePaymentSumAggregateOutputType = {
+    id: number | null
+    sum: number | null
+    fileId: number | null
+    historyId: number | null
+  }
+
+  export type FilePaymentMinAggregateOutputType = {
+    id: number | null
+    sum: number | null
+    fileId: number | null
+    historyId: number | null
+  }
+
+  export type FilePaymentMaxAggregateOutputType = {
+    id: number | null
+    sum: number | null
+    fileId: number | null
+    historyId: number | null
+  }
+
+  export type FilePaymentCountAggregateOutputType = {
+    id: number
+    sum: number
+    fileId: number
+    historyId: number
+    _all: number
+  }
+
+
+  export type FilePaymentAvgAggregateInputType = {
+    id?: true
+    sum?: true
+    fileId?: true
+    historyId?: true
+  }
+
+  export type FilePaymentSumAggregateInputType = {
+    id?: true
+    sum?: true
+    fileId?: true
+    historyId?: true
+  }
+
+  export type FilePaymentMinAggregateInputType = {
+    id?: true
+    sum?: true
+    fileId?: true
+    historyId?: true
+  }
+
+  export type FilePaymentMaxAggregateInputType = {
+    id?: true
+    sum?: true
+    fileId?: true
+    historyId?: true
+  }
+
+  export type FilePaymentCountAggregateInputType = {
+    id?: true
+    sum?: true
+    fileId?: true
+    historyId?: true
+    _all?: true
+  }
+
+  export type FilePaymentAggregateArgs = {
+    /**
+     * Filter which FilePayment to aggregate.
+     * 
+    **/
+    where?: FilePaymentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of FilePayments to fetch.
+     * 
+    **/
+    orderBy?: Enumerable<FilePaymentOrderByWithRelationInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     * 
+    **/
+    cursor?: FilePaymentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` FilePayments from the position of the cursor.
+     * 
+    **/
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` FilePayments.
+     * 
+    **/
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned FilePayments
+    **/
+    _count?: true | FilePaymentCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: FilePaymentAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: FilePaymentSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: FilePaymentMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: FilePaymentMaxAggregateInputType
+  }
+
+  export type GetFilePaymentAggregateType<T extends FilePaymentAggregateArgs> = {
+        [P in keyof T & keyof AggregateFilePayment]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateFilePayment[P]>
+      : GetScalarType<T[P], AggregateFilePayment[P]>
+  }
+
+
+
+
+  export type FilePaymentGroupByArgs = {
+    where?: FilePaymentWhereInput
+    orderBy?: Enumerable<FilePaymentOrderByWithAggregationInput>
+    by: Array<FilePaymentScalarFieldEnum>
+    having?: FilePaymentScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: FilePaymentCountAggregateInputType | true
+    _avg?: FilePaymentAvgAggregateInputType
+    _sum?: FilePaymentSumAggregateInputType
+    _min?: FilePaymentMinAggregateInputType
+    _max?: FilePaymentMaxAggregateInputType
+  }
+
+
+  export type FilePaymentGroupByOutputType = {
+    id: number
+    sum: number
+    fileId: number
+    historyId: number
+    _count: FilePaymentCountAggregateOutputType | null
+    _avg: FilePaymentAvgAggregateOutputType | null
+    _sum: FilePaymentSumAggregateOutputType | null
+    _min: FilePaymentMinAggregateOutputType | null
+    _max: FilePaymentMaxAggregateOutputType | null
+  }
+
+  type GetFilePaymentGroupByPayload<T extends FilePaymentGroupByArgs> = PrismaPromise<
+    Array<
+      PickArray<FilePaymentGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof FilePaymentGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], FilePaymentGroupByOutputType[P]>
+            : GetScalarType<T[P], FilePaymentGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type FilePaymentSelect = {
+    id?: boolean
+    sum?: boolean
+    file?: boolean | FileArgs
+    fileId?: boolean
+    history?: boolean | InstructorHistoryArgs
+    historyId?: boolean
+  }
+
+  export type FilePaymentInclude = {
+    file?: boolean | FileArgs
+    history?: boolean | InstructorHistoryArgs
+  }
+
+  export type FilePaymentGetPayload<
+    S extends boolean | null | undefined | FilePaymentArgs,
+    U = keyof S
+      > = S extends true
+        ? FilePayment
+    : S extends undefined
+    ? never
+    : S extends FilePaymentArgs | FilePaymentFindManyArgs
+    ?'include' extends U
+    ? FilePayment  & {
+    [P in TrueKeys<S['include']>]:
+        P extends 'file' ? FileGetPayload<S['include'][P]> :
+        P extends 'history' ? InstructorHistoryGetPayload<S['include'][P]> :  never
+  } 
+    : 'select' extends U
+    ? {
+    [P in TrueKeys<S['select']>]:
+        P extends 'file' ? FileGetPayload<S['select'][P]> :
+        P extends 'history' ? InstructorHistoryGetPayload<S['select'][P]> :  P extends keyof FilePayment ? FilePayment[P] : never
+  } 
+    : FilePayment
+  : FilePayment
+
+
+  type FilePaymentCountArgs = Merge<
+    Omit<FilePaymentFindManyArgs, 'select' | 'include'> & {
+      select?: FilePaymentCountAggregateInputType | true
+    }
+  >
+
+  export interface FilePaymentDelegate<GlobalRejectSettings> {
+    /**
+     * Find zero or one FilePayment that matches the filter.
+     * @param {FilePaymentFindUniqueArgs} args - Arguments to find a FilePayment
+     * @example
+     * // Get one FilePayment
+     * const filePayment = await prisma.filePayment.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findUnique<T extends FilePaymentFindUniqueArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
+      args: SelectSubset<T, FilePaymentFindUniqueArgs>
+    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findUnique', 'FilePayment'> extends True ? CheckSelect<T, Prisma__FilePaymentClient<FilePayment>, Prisma__FilePaymentClient<FilePaymentGetPayload<T>>> : CheckSelect<T, Prisma__FilePaymentClient<FilePayment | null >, Prisma__FilePaymentClient<FilePaymentGetPayload<T> | null >>
+
+    /**
+     * Find the first FilePayment that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FilePaymentFindFirstArgs} args - Arguments to find a FilePayment
+     * @example
+     * // Get one FilePayment
+     * const filePayment = await prisma.filePayment.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findFirst<T extends FilePaymentFindFirstArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
+      args?: SelectSubset<T, FilePaymentFindFirstArgs>
+    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findFirst', 'FilePayment'> extends True ? CheckSelect<T, Prisma__FilePaymentClient<FilePayment>, Prisma__FilePaymentClient<FilePaymentGetPayload<T>>> : CheckSelect<T, Prisma__FilePaymentClient<FilePayment | null >, Prisma__FilePaymentClient<FilePaymentGetPayload<T> | null >>
+
+    /**
+     * Find zero or more FilePayments that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FilePaymentFindManyArgs=} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all FilePayments
+     * const filePayments = await prisma.filePayment.findMany()
+     * 
+     * // Get first 10 FilePayments
+     * const filePayments = await prisma.filePayment.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const filePaymentWithIdOnly = await prisma.filePayment.findMany({ select: { id: true } })
+     * 
+    **/
+    findMany<T extends FilePaymentFindManyArgs>(
+      args?: SelectSubset<T, FilePaymentFindManyArgs>
+    ): CheckSelect<T, PrismaPromise<Array<FilePayment>>, PrismaPromise<Array<FilePaymentGetPayload<T>>>>
+
+    /**
+     * Create a FilePayment.
+     * @param {FilePaymentCreateArgs} args - Arguments to create a FilePayment.
+     * @example
+     * // Create one FilePayment
+     * const FilePayment = await prisma.filePayment.create({
+     *   data: {
+     *     // ... data to create a FilePayment
+     *   }
+     * })
+     * 
+    **/
+    create<T extends FilePaymentCreateArgs>(
+      args: SelectSubset<T, FilePaymentCreateArgs>
+    ): CheckSelect<T, Prisma__FilePaymentClient<FilePayment>, Prisma__FilePaymentClient<FilePaymentGetPayload<T>>>
+
+    /**
+     * Create many FilePayments.
+     *     @param {FilePaymentCreateManyArgs} args - Arguments to create many FilePayments.
+     *     @example
+     *     // Create many FilePayments
+     *     const filePayment = await prisma.filePayment.createMany({
+     *       data: {
+     *         // ... provide data here
+     *       }
+     *     })
+     *     
+    **/
+    createMany<T extends FilePaymentCreateManyArgs>(
+      args?: SelectSubset<T, FilePaymentCreateManyArgs>
+    ): PrismaPromise<BatchPayload>
+
+    /**
+     * Delete a FilePayment.
+     * @param {FilePaymentDeleteArgs} args - Arguments to delete one FilePayment.
+     * @example
+     * // Delete one FilePayment
+     * const FilePayment = await prisma.filePayment.delete({
+     *   where: {
+     *     // ... filter to delete one FilePayment
+     *   }
+     * })
+     * 
+    **/
+    delete<T extends FilePaymentDeleteArgs>(
+      args: SelectSubset<T, FilePaymentDeleteArgs>
+    ): CheckSelect<T, Prisma__FilePaymentClient<FilePayment>, Prisma__FilePaymentClient<FilePaymentGetPayload<T>>>
+
+    /**
+     * Update one FilePayment.
+     * @param {FilePaymentUpdateArgs} args - Arguments to update one FilePayment.
+     * @example
+     * // Update one FilePayment
+     * const filePayment = await prisma.filePayment.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+    **/
+    update<T extends FilePaymentUpdateArgs>(
+      args: SelectSubset<T, FilePaymentUpdateArgs>
+    ): CheckSelect<T, Prisma__FilePaymentClient<FilePayment>, Prisma__FilePaymentClient<FilePaymentGetPayload<T>>>
+
+    /**
+     * Delete zero or more FilePayments.
+     * @param {FilePaymentDeleteManyArgs} args - Arguments to filter FilePayments to delete.
+     * @example
+     * // Delete a few FilePayments
+     * const { count } = await prisma.filePayment.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+    **/
+    deleteMany<T extends FilePaymentDeleteManyArgs>(
+      args?: SelectSubset<T, FilePaymentDeleteManyArgs>
+    ): PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more FilePayments.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FilePaymentUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many FilePayments
+     * const filePayment = await prisma.filePayment.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+    **/
+    updateMany<T extends FilePaymentUpdateManyArgs>(
+      args: SelectSubset<T, FilePaymentUpdateManyArgs>
+    ): PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one FilePayment.
+     * @param {FilePaymentUpsertArgs} args - Arguments to update or create a FilePayment.
+     * @example
+     * // Update or create a FilePayment
+     * const filePayment = await prisma.filePayment.upsert({
+     *   create: {
+     *     // ... data to create a FilePayment
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the FilePayment we want to update
+     *   }
+     * })
+    **/
+    upsert<T extends FilePaymentUpsertArgs>(
+      args: SelectSubset<T, FilePaymentUpsertArgs>
+    ): CheckSelect<T, Prisma__FilePaymentClient<FilePayment>, Prisma__FilePaymentClient<FilePaymentGetPayload<T>>>
+
+    /**
+     * Count the number of FilePayments.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FilePaymentCountArgs} args - Arguments to filter FilePayments to count.
+     * @example
+     * // Count the number of FilePayments
+     * const count = await prisma.filePayment.count({
+     *   where: {
+     *     // ... the filter for the FilePayments we want to count
+     *   }
+     * })
+    **/
+    count<T extends FilePaymentCountArgs>(
+      args?: Subset<T, FilePaymentCountArgs>,
+    ): PrismaPromise<
+      T extends _Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], FilePaymentCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a FilePayment.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FilePaymentAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends FilePaymentAggregateArgs>(args: Subset<T, FilePaymentAggregateArgs>): PrismaPromise<GetFilePaymentAggregateType<T>>
+
+    /**
+     * Group by FilePayment.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FilePaymentGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends FilePaymentGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: FilePaymentGroupByArgs['orderBy'] }
+        : { orderBy?: FilePaymentGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends TupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, FilePaymentGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetFilePaymentGroupByPayload<T> : PrismaPromise<InputErrors>
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for FilePayment.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export class Prisma__FilePaymentClient<T> implements PrismaPromise<T> {
+    [prisma]: true;
+    private readonly _dmmf;
+    private readonly _fetcher;
+    private readonly _queryType;
+    private readonly _rootField;
+    private readonly _clientMethod;
+    private readonly _args;
+    private readonly _dataPath;
+    private readonly _errorFormat;
+    private readonly _measurePerformance?;
+    private _isList;
+    private _callsite;
+    private _requestPromise?;
+    constructor(_dmmf: runtime.DMMFClass, _fetcher: PrismaClientFetcher, _queryType: 'query' | 'mutation', _rootField: string, _clientMethod: string, _args: any, _dataPath: string[], _errorFormat: ErrorFormat, _measurePerformance?: boolean | undefined, _isList?: boolean);
+    readonly [Symbol.toStringTag]: 'PrismaClientPromise';
+
+    file<T extends FileArgs = {}>(args?: Subset<T, FileArgs>): CheckSelect<T, Prisma__FileClient<File | null >, Prisma__FileClient<FileGetPayload<T> | null >>;
+
+    history<T extends InstructorHistoryArgs = {}>(args?: Subset<T, InstructorHistoryArgs>): CheckSelect<T, Prisma__InstructorHistoryClient<InstructorHistory | null >, Prisma__InstructorHistoryClient<InstructorHistoryGetPayload<T> | null >>;
+
+    private get _document();
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): Promise<TResult1 | TResult2>;
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): Promise<T | TResult>;
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): Promise<T>;
+  }
+
+  // Custom InputTypes
+
+  /**
+   * FilePayment findUnique
+   */
+  export type FilePaymentFindUniqueArgs = {
+    /**
+     * Select specific fields to fetch from the FilePayment
+     * 
+    **/
+    select?: FilePaymentSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     * 
+    **/
+    include?: FilePaymentInclude | null
+    /**
+     * Throw an Error if a FilePayment can't be found
+     * 
+    **/
+    rejectOnNotFound?: RejectOnNotFound
+    /**
+     * Filter, which FilePayment to fetch.
+     * 
+    **/
+    where: FilePaymentWhereUniqueInput
+  }
+
+
+  /**
+   * FilePayment findFirst
+   */
+  export type FilePaymentFindFirstArgs = {
+    /**
+     * Select specific fields to fetch from the FilePayment
+     * 
+    **/
+    select?: FilePaymentSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     * 
+    **/
+    include?: FilePaymentInclude | null
+    /**
+     * Throw an Error if a FilePayment can't be found
+     * 
+    **/
+    rejectOnNotFound?: RejectOnNotFound
+    /**
+     * Filter, which FilePayment to fetch.
+     * 
+    **/
+    where?: FilePaymentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of FilePayments to fetch.
+     * 
+    **/
+    orderBy?: Enumerable<FilePaymentOrderByWithRelationInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for FilePayments.
+     * 
+    **/
+    cursor?: FilePaymentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` FilePayments from the position of the cursor.
+     * 
+    **/
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` FilePayments.
+     * 
+    **/
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of FilePayments.
+     * 
+    **/
+    distinct?: Enumerable<FilePaymentScalarFieldEnum>
+  }
+
+
+  /**
+   * FilePayment findMany
+   */
+  export type FilePaymentFindManyArgs = {
+    /**
+     * Select specific fields to fetch from the FilePayment
+     * 
+    **/
+    select?: FilePaymentSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     * 
+    **/
+    include?: FilePaymentInclude | null
+    /**
+     * Filter, which FilePayments to fetch.
+     * 
+    **/
+    where?: FilePaymentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of FilePayments to fetch.
+     * 
+    **/
+    orderBy?: Enumerable<FilePaymentOrderByWithRelationInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing FilePayments.
+     * 
+    **/
+    cursor?: FilePaymentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` FilePayments from the position of the cursor.
+     * 
+    **/
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` FilePayments.
+     * 
+    **/
+    skip?: number
+    distinct?: Enumerable<FilePaymentScalarFieldEnum>
+  }
+
+
+  /**
+   * FilePayment create
+   */
+  export type FilePaymentCreateArgs = {
+    /**
+     * Select specific fields to fetch from the FilePayment
+     * 
+    **/
+    select?: FilePaymentSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     * 
+    **/
+    include?: FilePaymentInclude | null
+    /**
+     * The data needed to create a FilePayment.
+     * 
+    **/
+    data: XOR<FilePaymentCreateInput, FilePaymentUncheckedCreateInput>
+  }
+
+
+  /**
+   * FilePayment createMany
+   */
+  export type FilePaymentCreateManyArgs = {
+    /**
+     * The data used to create many FilePayments.
+     * 
+    **/
+    data: Enumerable<FilePaymentCreateManyInput>
+    skipDuplicates?: boolean
+  }
+
+
+  /**
+   * FilePayment update
+   */
+  export type FilePaymentUpdateArgs = {
+    /**
+     * Select specific fields to fetch from the FilePayment
+     * 
+    **/
+    select?: FilePaymentSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     * 
+    **/
+    include?: FilePaymentInclude | null
+    /**
+     * The data needed to update a FilePayment.
+     * 
+    **/
+    data: XOR<FilePaymentUpdateInput, FilePaymentUncheckedUpdateInput>
+    /**
+     * Choose, which FilePayment to update.
+     * 
+    **/
+    where: FilePaymentWhereUniqueInput
+  }
+
+
+  /**
+   * FilePayment updateMany
+   */
+  export type FilePaymentUpdateManyArgs = {
+    /**
+     * The data used to update FilePayments.
+     * 
+    **/
+    data: XOR<FilePaymentUpdateManyMutationInput, FilePaymentUncheckedUpdateManyInput>
+    /**
+     * Filter which FilePayments to update
+     * 
+    **/
+    where?: FilePaymentWhereInput
+  }
+
+
+  /**
+   * FilePayment upsert
+   */
+  export type FilePaymentUpsertArgs = {
+    /**
+     * Select specific fields to fetch from the FilePayment
+     * 
+    **/
+    select?: FilePaymentSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     * 
+    **/
+    include?: FilePaymentInclude | null
+    /**
+     * The filter to search for the FilePayment to update in case it exists.
+     * 
+    **/
+    where: FilePaymentWhereUniqueInput
+    /**
+     * In case the FilePayment found by the `where` argument doesn't exist, create a new FilePayment with this data.
+     * 
+    **/
+    create: XOR<FilePaymentCreateInput, FilePaymentUncheckedCreateInput>
+    /**
+     * In case the FilePayment was found with the provided `where` argument, update it with this data.
+     * 
+    **/
+    update: XOR<FilePaymentUpdateInput, FilePaymentUncheckedUpdateInput>
+  }
+
+
+  /**
+   * FilePayment delete
+   */
+  export type FilePaymentDeleteArgs = {
+    /**
+     * Select specific fields to fetch from the FilePayment
+     * 
+    **/
+    select?: FilePaymentSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     * 
+    **/
+    include?: FilePaymentInclude | null
+    /**
+     * Filter which FilePayment to delete.
+     * 
+    **/
+    where: FilePaymentWhereUniqueInput
+  }
+
+
+  /**
+   * FilePayment deleteMany
+   */
+  export type FilePaymentDeleteManyArgs = {
+    /**
+     * Filter which FilePayments to delete
+     * 
+    **/
+    where?: FilePaymentWhereInput
+  }
+
+
+  /**
+   * FilePayment without action
+   */
+  export type FilePaymentArgs = {
+    /**
+     * Select specific fields to fetch from the FilePayment
+     * 
+    **/
+    select?: FilePaymentSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     * 
+    **/
+    include?: FilePaymentInclude | null
   }
 
 
@@ -7994,6 +9055,7 @@ export namespace Prisma {
     date: 'date',
     fallaf_price: 'fallaf_price',
     dev_price: 'dev_price',
+    paid: 'paid',
     instructorId: 'instructorId'
   };
 
@@ -8008,6 +9070,16 @@ export namespace Prisma {
   };
 
   export type InstructorHistoryScalarFieldEnum = (typeof InstructorHistoryScalarFieldEnum)[keyof typeof InstructorHistoryScalarFieldEnum]
+
+
+  export const FilePaymentScalarFieldEnum: {
+    id: 'id',
+    sum: 'sum',
+    fileId: 'fileId',
+    historyId: 'historyId'
+  };
+
+  export type FilePaymentScalarFieldEnum = (typeof FilePaymentScalarFieldEnum)[keyof typeof FilePaymentScalarFieldEnum]
 
 
   export const DevHistoryScalarFieldEnum: {
@@ -8126,7 +9198,9 @@ export namespace Prisma {
     date?: DateTimeFilter | Date | string
     fallaf_price?: FloatFilter | number
     dev_price?: FloatFilter | number
+    paid?: FloatFilter | number
     instructorId?: IntFilter | number
+    FilePayment?: FilePaymentListRelationFilter
   }
 
   export type FileOrderByWithRelationInput = {
@@ -8136,7 +9210,9 @@ export namespace Prisma {
     date?: SortOrder
     fallaf_price?: SortOrder
     dev_price?: SortOrder
+    paid?: SortOrder
     instructorId?: SortOrder
+    FilePayment?: FilePaymentOrderByRelationAggregateInput
   }
 
   export type FileWhereUniqueInput = {
@@ -8149,6 +9225,7 @@ export namespace Prisma {
     date?: SortOrder
     fallaf_price?: SortOrder
     dev_price?: SortOrder
+    paid?: SortOrder
     instructorId?: SortOrder
     _count?: FileCountOrderByAggregateInput
     _avg?: FileAvgOrderByAggregateInput
@@ -8166,6 +9243,7 @@ export namespace Prisma {
     date?: DateTimeWithAggregatesFilter | Date | string
     fallaf_price?: FloatWithAggregatesFilter | number
     dev_price?: FloatWithAggregatesFilter | number
+    paid?: FloatWithAggregatesFilter | number
     instructorId?: IntWithAggregatesFilter | number
   }
 
@@ -8178,6 +9256,7 @@ export namespace Prisma {
     date?: DateTimeFilter | Date | string
     sum?: FloatFilter | number
     instructorId?: IntFilter | number
+    FilePayment?: FilePaymentListRelationFilter
   }
 
   export type InstructorHistoryOrderByWithRelationInput = {
@@ -8186,6 +9265,7 @@ export namespace Prisma {
     date?: SortOrder
     sum?: SortOrder
     instructorId?: SortOrder
+    FilePayment?: FilePaymentOrderByRelationAggregateInput
   }
 
   export type InstructorHistoryWhereUniqueInput = {
@@ -8212,6 +9292,53 @@ export namespace Prisma {
     date?: DateTimeWithAggregatesFilter | Date | string
     sum?: FloatWithAggregatesFilter | number
     instructorId?: IntWithAggregatesFilter | number
+  }
+
+  export type FilePaymentWhereInput = {
+    AND?: Enumerable<FilePaymentWhereInput>
+    OR?: Enumerable<FilePaymentWhereInput>
+    NOT?: Enumerable<FilePaymentWhereInput>
+    id?: IntFilter | number
+    sum?: FloatFilter | number
+    file?: XOR<FileRelationFilter, FileWhereInput>
+    fileId?: IntFilter | number
+    history?: XOR<InstructorHistoryRelationFilter, InstructorHistoryWhereInput>
+    historyId?: IntFilter | number
+  }
+
+  export type FilePaymentOrderByWithRelationInput = {
+    id?: SortOrder
+    sum?: SortOrder
+    file?: FileOrderByWithRelationInput
+    fileId?: SortOrder
+    history?: InstructorHistoryOrderByWithRelationInput
+    historyId?: SortOrder
+  }
+
+  export type FilePaymentWhereUniqueInput = {
+    id?: number
+  }
+
+  export type FilePaymentOrderByWithAggregationInput = {
+    id?: SortOrder
+    sum?: SortOrder
+    fileId?: SortOrder
+    historyId?: SortOrder
+    _count?: FilePaymentCountOrderByAggregateInput
+    _avg?: FilePaymentAvgOrderByAggregateInput
+    _max?: FilePaymentMaxOrderByAggregateInput
+    _min?: FilePaymentMinOrderByAggregateInput
+    _sum?: FilePaymentSumOrderByAggregateInput
+  }
+
+  export type FilePaymentScalarWhereWithAggregatesInput = {
+    AND?: Enumerable<FilePaymentScalarWhereWithAggregatesInput>
+    OR?: Enumerable<FilePaymentScalarWhereWithAggregatesInput>
+    NOT?: Enumerable<FilePaymentScalarWhereWithAggregatesInput>
+    id?: IntWithAggregatesFilter | number
+    sum?: FloatWithAggregatesFilter | number
+    fileId?: IntWithAggregatesFilter | number
+    historyId?: IntWithAggregatesFilter | number
   }
 
   export type DevHistoryWhereInput = {
@@ -8485,6 +9612,8 @@ export namespace Prisma {
     date: Date | string
     fallaf_price: number
     dev_price: number
+    paid?: number
+    FilePayment?: FilePaymentCreateNestedManyWithoutFileInput
   }
 
   export type FileUncheckedCreateInput = {
@@ -8493,7 +9622,9 @@ export namespace Prisma {
     date: Date | string
     fallaf_price: number
     dev_price: number
+    paid?: number
     instructorId: number
+    FilePayment?: FilePaymentUncheckedCreateNestedManyWithoutFileInput
   }
 
   export type FileUpdateInput = {
@@ -8502,6 +9633,8 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     fallaf_price?: FloatFieldUpdateOperationsInput | number
     dev_price?: FloatFieldUpdateOperationsInput | number
+    paid?: FloatFieldUpdateOperationsInput | number
+    FilePayment?: FilePaymentUpdateManyWithoutFileInput
   }
 
   export type FileUncheckedUpdateInput = {
@@ -8510,7 +9643,9 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     fallaf_price?: FloatFieldUpdateOperationsInput | number
     dev_price?: FloatFieldUpdateOperationsInput | number
+    paid?: FloatFieldUpdateOperationsInput | number
     instructorId?: IntFieldUpdateOperationsInput | number
+    FilePayment?: FilePaymentUncheckedUpdateManyWithoutFileInput
   }
 
   export type FileCreateManyInput = {
@@ -8519,6 +9654,7 @@ export namespace Prisma {
     date: Date | string
     fallaf_price: number
     dev_price: number
+    paid?: number
     instructorId: number
   }
 
@@ -8527,6 +9663,7 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     fallaf_price?: FloatFieldUpdateOperationsInput | number
     dev_price?: FloatFieldUpdateOperationsInput | number
+    paid?: FloatFieldUpdateOperationsInput | number
   }
 
   export type FileUncheckedUpdateManyInput = {
@@ -8535,6 +9672,7 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     fallaf_price?: FloatFieldUpdateOperationsInput | number
     dev_price?: FloatFieldUpdateOperationsInput | number
+    paid?: FloatFieldUpdateOperationsInput | number
     instructorId?: IntFieldUpdateOperationsInput | number
   }
 
@@ -8542,6 +9680,7 @@ export namespace Prisma {
     instructor: InstructorCreateNestedOneWithoutInstructorHistoryInput
     date: Date | string
     sum: number
+    FilePayment?: FilePaymentCreateNestedManyWithoutHistoryInput
   }
 
   export type InstructorHistoryUncheckedCreateInput = {
@@ -8549,12 +9688,14 @@ export namespace Prisma {
     date: Date | string
     sum: number
     instructorId: number
+    FilePayment?: FilePaymentUncheckedCreateNestedManyWithoutHistoryInput
   }
 
   export type InstructorHistoryUpdateInput = {
     instructor?: InstructorUpdateOneRequiredWithoutInstructorHistoryInput
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     sum?: FloatFieldUpdateOperationsInput | number
+    FilePayment?: FilePaymentUpdateManyWithoutHistoryInput
   }
 
   export type InstructorHistoryUncheckedUpdateInput = {
@@ -8562,6 +9703,7 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     sum?: FloatFieldUpdateOperationsInput | number
     instructorId?: IntFieldUpdateOperationsInput | number
+    FilePayment?: FilePaymentUncheckedUpdateManyWithoutHistoryInput
   }
 
   export type InstructorHistoryCreateManyInput = {
@@ -8581,6 +9723,50 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     sum?: FloatFieldUpdateOperationsInput | number
     instructorId?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type FilePaymentCreateInput = {
+    sum: number
+    file: FileCreateNestedOneWithoutFilePaymentInput
+    history: InstructorHistoryCreateNestedOneWithoutFilePaymentInput
+  }
+
+  export type FilePaymentUncheckedCreateInput = {
+    id?: number
+    sum: number
+    fileId: number
+    historyId: number
+  }
+
+  export type FilePaymentUpdateInput = {
+    sum?: FloatFieldUpdateOperationsInput | number
+    file?: FileUpdateOneRequiredWithoutFilePaymentInput
+    history?: InstructorHistoryUpdateOneRequiredWithoutFilePaymentInput
+  }
+
+  export type FilePaymentUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    sum?: FloatFieldUpdateOperationsInput | number
+    fileId?: IntFieldUpdateOperationsInput | number
+    historyId?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type FilePaymentCreateManyInput = {
+    id?: number
+    sum: number
+    fileId: number
+    historyId: number
+  }
+
+  export type FilePaymentUpdateManyMutationInput = {
+    sum?: FloatFieldUpdateOperationsInput | number
+  }
+
+  export type FilePaymentUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    sum?: FloatFieldUpdateOperationsInput | number
+    fileId?: IntFieldUpdateOperationsInput | number
+    historyId?: IntFieldUpdateOperationsInput | number
   }
 
   export type DevHistoryCreateInput = {
@@ -8966,12 +10152,23 @@ export namespace Prisma {
     not?: NestedDateTimeFilter | Date | string
   }
 
+  export type FilePaymentListRelationFilter = {
+    every?: FilePaymentWhereInput
+    some?: FilePaymentWhereInput
+    none?: FilePaymentWhereInput
+  }
+
+  export type FilePaymentOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
   export type FileCountOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
     date?: SortOrder
     fallaf_price?: SortOrder
     dev_price?: SortOrder
+    paid?: SortOrder
     instructorId?: SortOrder
   }
 
@@ -8979,6 +10176,7 @@ export namespace Prisma {
     id?: SortOrder
     fallaf_price?: SortOrder
     dev_price?: SortOrder
+    paid?: SortOrder
     instructorId?: SortOrder
   }
 
@@ -8988,6 +10186,7 @@ export namespace Prisma {
     date?: SortOrder
     fallaf_price?: SortOrder
     dev_price?: SortOrder
+    paid?: SortOrder
     instructorId?: SortOrder
   }
 
@@ -8997,6 +10196,7 @@ export namespace Prisma {
     date?: SortOrder
     fallaf_price?: SortOrder
     dev_price?: SortOrder
+    paid?: SortOrder
     instructorId?: SortOrder
   }
 
@@ -9004,6 +10204,7 @@ export namespace Prisma {
     id?: SortOrder
     fallaf_price?: SortOrder
     dev_price?: SortOrder
+    paid?: SortOrder
     instructorId?: SortOrder
   }
 
@@ -9052,6 +10253,51 @@ export namespace Prisma {
     id?: SortOrder
     sum?: SortOrder
     instructorId?: SortOrder
+  }
+
+  export type FileRelationFilter = {
+    is?: FileWhereInput
+    isNot?: FileWhereInput
+  }
+
+  export type InstructorHistoryRelationFilter = {
+    is?: InstructorHistoryWhereInput
+    isNot?: InstructorHistoryWhereInput
+  }
+
+  export type FilePaymentCountOrderByAggregateInput = {
+    id?: SortOrder
+    sum?: SortOrder
+    fileId?: SortOrder
+    historyId?: SortOrder
+  }
+
+  export type FilePaymentAvgOrderByAggregateInput = {
+    id?: SortOrder
+    sum?: SortOrder
+    fileId?: SortOrder
+    historyId?: SortOrder
+  }
+
+  export type FilePaymentMaxOrderByAggregateInput = {
+    id?: SortOrder
+    sum?: SortOrder
+    fileId?: SortOrder
+    historyId?: SortOrder
+  }
+
+  export type FilePaymentMinOrderByAggregateInput = {
+    id?: SortOrder
+    sum?: SortOrder
+    fileId?: SortOrder
+    historyId?: SortOrder
+  }
+
+  export type FilePaymentSumOrderByAggregateInput = {
+    id?: SortOrder
+    sum?: SortOrder
+    fileId?: SortOrder
+    historyId?: SortOrder
   }
 
   export type DevHistoryCountOrderByAggregateInput = {
@@ -9427,6 +10673,20 @@ export namespace Prisma {
     connect?: InstructorWhereUniqueInput
   }
 
+  export type FilePaymentCreateNestedManyWithoutFileInput = {
+    create?: XOR<Enumerable<FilePaymentCreateWithoutFileInput>, Enumerable<FilePaymentUncheckedCreateWithoutFileInput>>
+    connectOrCreate?: Enumerable<FilePaymentCreateOrConnectWithoutFileInput>
+    createMany?: FilePaymentCreateManyFileInputEnvelope
+    connect?: Enumerable<FilePaymentWhereUniqueInput>
+  }
+
+  export type FilePaymentUncheckedCreateNestedManyWithoutFileInput = {
+    create?: XOR<Enumerable<FilePaymentCreateWithoutFileInput>, Enumerable<FilePaymentUncheckedCreateWithoutFileInput>>
+    connectOrCreate?: Enumerable<FilePaymentCreateOrConnectWithoutFileInput>
+    createMany?: FilePaymentCreateManyFileInputEnvelope
+    connect?: Enumerable<FilePaymentWhereUniqueInput>
+  }
+
   export type InstructorUpdateOneRequiredWithoutFileInput = {
     create?: XOR<InstructorCreateWithoutFileInput, InstructorUncheckedCreateWithoutFileInput>
     connectOrCreate?: InstructorCreateOrConnectWithoutFileInput
@@ -9439,10 +10699,52 @@ export namespace Prisma {
     set?: Date | string
   }
 
+  export type FilePaymentUpdateManyWithoutFileInput = {
+    create?: XOR<Enumerable<FilePaymentCreateWithoutFileInput>, Enumerable<FilePaymentUncheckedCreateWithoutFileInput>>
+    connectOrCreate?: Enumerable<FilePaymentCreateOrConnectWithoutFileInput>
+    upsert?: Enumerable<FilePaymentUpsertWithWhereUniqueWithoutFileInput>
+    createMany?: FilePaymentCreateManyFileInputEnvelope
+    set?: Enumerable<FilePaymentWhereUniqueInput>
+    disconnect?: Enumerable<FilePaymentWhereUniqueInput>
+    delete?: Enumerable<FilePaymentWhereUniqueInput>
+    connect?: Enumerable<FilePaymentWhereUniqueInput>
+    update?: Enumerable<FilePaymentUpdateWithWhereUniqueWithoutFileInput>
+    updateMany?: Enumerable<FilePaymentUpdateManyWithWhereWithoutFileInput>
+    deleteMany?: Enumerable<FilePaymentScalarWhereInput>
+  }
+
+  export type FilePaymentUncheckedUpdateManyWithoutFileInput = {
+    create?: XOR<Enumerable<FilePaymentCreateWithoutFileInput>, Enumerable<FilePaymentUncheckedCreateWithoutFileInput>>
+    connectOrCreate?: Enumerable<FilePaymentCreateOrConnectWithoutFileInput>
+    upsert?: Enumerable<FilePaymentUpsertWithWhereUniqueWithoutFileInput>
+    createMany?: FilePaymentCreateManyFileInputEnvelope
+    set?: Enumerable<FilePaymentWhereUniqueInput>
+    disconnect?: Enumerable<FilePaymentWhereUniqueInput>
+    delete?: Enumerable<FilePaymentWhereUniqueInput>
+    connect?: Enumerable<FilePaymentWhereUniqueInput>
+    update?: Enumerable<FilePaymentUpdateWithWhereUniqueWithoutFileInput>
+    updateMany?: Enumerable<FilePaymentUpdateManyWithWhereWithoutFileInput>
+    deleteMany?: Enumerable<FilePaymentScalarWhereInput>
+  }
+
   export type InstructorCreateNestedOneWithoutInstructorHistoryInput = {
     create?: XOR<InstructorCreateWithoutInstructorHistoryInput, InstructorUncheckedCreateWithoutInstructorHistoryInput>
     connectOrCreate?: InstructorCreateOrConnectWithoutInstructorHistoryInput
     connect?: InstructorWhereUniqueInput
+  }
+
+  export type FilePaymentCreateNestedManyWithoutHistoryInput = {
+    create?: XOR<Enumerable<FilePaymentCreateWithoutHistoryInput>, Enumerable<FilePaymentUncheckedCreateWithoutHistoryInput>>
+    connectOrCreate?: Enumerable<FilePaymentCreateOrConnectWithoutHistoryInput>
+    createMany?: FilePaymentCreateManyHistoryInputEnvelope
+    connect?: Enumerable<FilePaymentWhereUniqueInput>
+  }
+
+  export type FilePaymentUncheckedCreateNestedManyWithoutHistoryInput = {
+    create?: XOR<Enumerable<FilePaymentCreateWithoutHistoryInput>, Enumerable<FilePaymentUncheckedCreateWithoutHistoryInput>>
+    connectOrCreate?: Enumerable<FilePaymentCreateOrConnectWithoutHistoryInput>
+    createMany?: FilePaymentCreateManyHistoryInputEnvelope
+    connect?: Enumerable<FilePaymentWhereUniqueInput>
   }
 
   export type InstructorUpdateOneRequiredWithoutInstructorHistoryInput = {
@@ -9451,6 +10753,62 @@ export namespace Prisma {
     upsert?: InstructorUpsertWithoutInstructorHistoryInput
     connect?: InstructorWhereUniqueInput
     update?: XOR<InstructorUpdateWithoutInstructorHistoryInput, InstructorUncheckedUpdateWithoutInstructorHistoryInput>
+  }
+
+  export type FilePaymentUpdateManyWithoutHistoryInput = {
+    create?: XOR<Enumerable<FilePaymentCreateWithoutHistoryInput>, Enumerable<FilePaymentUncheckedCreateWithoutHistoryInput>>
+    connectOrCreate?: Enumerable<FilePaymentCreateOrConnectWithoutHistoryInput>
+    upsert?: Enumerable<FilePaymentUpsertWithWhereUniqueWithoutHistoryInput>
+    createMany?: FilePaymentCreateManyHistoryInputEnvelope
+    set?: Enumerable<FilePaymentWhereUniqueInput>
+    disconnect?: Enumerable<FilePaymentWhereUniqueInput>
+    delete?: Enumerable<FilePaymentWhereUniqueInput>
+    connect?: Enumerable<FilePaymentWhereUniqueInput>
+    update?: Enumerable<FilePaymentUpdateWithWhereUniqueWithoutHistoryInput>
+    updateMany?: Enumerable<FilePaymentUpdateManyWithWhereWithoutHistoryInput>
+    deleteMany?: Enumerable<FilePaymentScalarWhereInput>
+  }
+
+  export type FilePaymentUncheckedUpdateManyWithoutHistoryInput = {
+    create?: XOR<Enumerable<FilePaymentCreateWithoutHistoryInput>, Enumerable<FilePaymentUncheckedCreateWithoutHistoryInput>>
+    connectOrCreate?: Enumerable<FilePaymentCreateOrConnectWithoutHistoryInput>
+    upsert?: Enumerable<FilePaymentUpsertWithWhereUniqueWithoutHistoryInput>
+    createMany?: FilePaymentCreateManyHistoryInputEnvelope
+    set?: Enumerable<FilePaymentWhereUniqueInput>
+    disconnect?: Enumerable<FilePaymentWhereUniqueInput>
+    delete?: Enumerable<FilePaymentWhereUniqueInput>
+    connect?: Enumerable<FilePaymentWhereUniqueInput>
+    update?: Enumerable<FilePaymentUpdateWithWhereUniqueWithoutHistoryInput>
+    updateMany?: Enumerable<FilePaymentUpdateManyWithWhereWithoutHistoryInput>
+    deleteMany?: Enumerable<FilePaymentScalarWhereInput>
+  }
+
+  export type FileCreateNestedOneWithoutFilePaymentInput = {
+    create?: XOR<FileCreateWithoutFilePaymentInput, FileUncheckedCreateWithoutFilePaymentInput>
+    connectOrCreate?: FileCreateOrConnectWithoutFilePaymentInput
+    connect?: FileWhereUniqueInput
+  }
+
+  export type InstructorHistoryCreateNestedOneWithoutFilePaymentInput = {
+    create?: XOR<InstructorHistoryCreateWithoutFilePaymentInput, InstructorHistoryUncheckedCreateWithoutFilePaymentInput>
+    connectOrCreate?: InstructorHistoryCreateOrConnectWithoutFilePaymentInput
+    connect?: InstructorHistoryWhereUniqueInput
+  }
+
+  export type FileUpdateOneRequiredWithoutFilePaymentInput = {
+    create?: XOR<FileCreateWithoutFilePaymentInput, FileUncheckedCreateWithoutFilePaymentInput>
+    connectOrCreate?: FileCreateOrConnectWithoutFilePaymentInput
+    upsert?: FileUpsertWithoutFilePaymentInput
+    connect?: FileWhereUniqueInput
+    update?: XOR<FileUpdateWithoutFilePaymentInput, FileUncheckedUpdateWithoutFilePaymentInput>
+  }
+
+  export type InstructorHistoryUpdateOneRequiredWithoutFilePaymentInput = {
+    create?: XOR<InstructorHistoryCreateWithoutFilePaymentInput, InstructorHistoryUncheckedCreateWithoutFilePaymentInput>
+    connectOrCreate?: InstructorHistoryCreateOrConnectWithoutFilePaymentInput
+    upsert?: InstructorHistoryUpsertWithoutFilePaymentInput
+    connect?: InstructorHistoryWhereUniqueInput
+    update?: XOR<InstructorHistoryUpdateWithoutFilePaymentInput, InstructorHistoryUncheckedUpdateWithoutFilePaymentInput>
   }
 
   export type InstructorCreateNestedOneWithoutUserInput = {
@@ -9735,6 +11093,8 @@ export namespace Prisma {
     date: Date | string
     fallaf_price: number
     dev_price: number
+    paid?: number
+    FilePayment?: FilePaymentCreateNestedManyWithoutFileInput
   }
 
   export type FileUncheckedCreateWithoutInstructorInput = {
@@ -9743,6 +11103,8 @@ export namespace Prisma {
     date: Date | string
     fallaf_price: number
     dev_price: number
+    paid?: number
+    FilePayment?: FilePaymentUncheckedCreateNestedManyWithoutFileInput
   }
 
   export type FileCreateOrConnectWithoutInstructorInput = {
@@ -9758,12 +11120,14 @@ export namespace Prisma {
   export type InstructorHistoryCreateWithoutInstructorInput = {
     date: Date | string
     sum: number
+    FilePayment?: FilePaymentCreateNestedManyWithoutHistoryInput
   }
 
   export type InstructorHistoryUncheckedCreateWithoutInstructorInput = {
     id?: number
     date: Date | string
     sum: number
+    FilePayment?: FilePaymentUncheckedCreateNestedManyWithoutHistoryInput
   }
 
   export type InstructorHistoryCreateOrConnectWithoutInstructorInput = {
@@ -9828,6 +11192,7 @@ export namespace Prisma {
     date?: DateTimeFilter | Date | string
     fallaf_price?: FloatFilter | number
     dev_price?: FloatFilter | number
+    paid?: FloatFilter | number
     instructorId?: IntFilter | number
   }
 
@@ -9905,6 +11270,27 @@ export namespace Prisma {
     create: XOR<InstructorCreateWithoutFileInput, InstructorUncheckedCreateWithoutFileInput>
   }
 
+  export type FilePaymentCreateWithoutFileInput = {
+    sum: number
+    history: InstructorHistoryCreateNestedOneWithoutFilePaymentInput
+  }
+
+  export type FilePaymentUncheckedCreateWithoutFileInput = {
+    id?: number
+    sum: number
+    historyId: number
+  }
+
+  export type FilePaymentCreateOrConnectWithoutFileInput = {
+    where: FilePaymentWhereUniqueInput
+    create: XOR<FilePaymentCreateWithoutFileInput, FilePaymentUncheckedCreateWithoutFileInput>
+  }
+
+  export type FilePaymentCreateManyFileInputEnvelope = {
+    data: Enumerable<FilePaymentCreateManyFileInput>
+    skipDuplicates?: boolean
+  }
+
   export type InstructorUpsertWithoutFileInput = {
     update: XOR<InstructorUpdateWithoutFileInput, InstructorUncheckedUpdateWithoutFileInput>
     create: XOR<InstructorCreateWithoutFileInput, InstructorUncheckedCreateWithoutFileInput>
@@ -9923,6 +11309,32 @@ export namespace Prisma {
     price?: FloatFieldUpdateOperationsInput | number
     InstructorHistory?: InstructorHistoryUncheckedUpdateManyWithoutInstructorInput
     User?: UserUncheckedUpdateManyWithoutInstructorInput
+  }
+
+  export type FilePaymentUpsertWithWhereUniqueWithoutFileInput = {
+    where: FilePaymentWhereUniqueInput
+    update: XOR<FilePaymentUpdateWithoutFileInput, FilePaymentUncheckedUpdateWithoutFileInput>
+    create: XOR<FilePaymentCreateWithoutFileInput, FilePaymentUncheckedCreateWithoutFileInput>
+  }
+
+  export type FilePaymentUpdateWithWhereUniqueWithoutFileInput = {
+    where: FilePaymentWhereUniqueInput
+    data: XOR<FilePaymentUpdateWithoutFileInput, FilePaymentUncheckedUpdateWithoutFileInput>
+  }
+
+  export type FilePaymentUpdateManyWithWhereWithoutFileInput = {
+    where: FilePaymentScalarWhereInput
+    data: XOR<FilePaymentUpdateManyMutationInput, FilePaymentUncheckedUpdateManyWithoutFilePaymentInput>
+  }
+
+  export type FilePaymentScalarWhereInput = {
+    AND?: Enumerable<FilePaymentScalarWhereInput>
+    OR?: Enumerable<FilePaymentScalarWhereInput>
+    NOT?: Enumerable<FilePaymentScalarWhereInput>
+    id?: IntFilter | number
+    sum?: FloatFilter | number
+    fileId?: IntFilter | number
+    historyId?: IntFilter | number
   }
 
   export type InstructorCreateWithoutInstructorHistoryInput = {
@@ -9945,6 +11357,27 @@ export namespace Prisma {
     create: XOR<InstructorCreateWithoutInstructorHistoryInput, InstructorUncheckedCreateWithoutInstructorHistoryInput>
   }
 
+  export type FilePaymentCreateWithoutHistoryInput = {
+    sum: number
+    file: FileCreateNestedOneWithoutFilePaymentInput
+  }
+
+  export type FilePaymentUncheckedCreateWithoutHistoryInput = {
+    id?: number
+    sum: number
+    fileId: number
+  }
+
+  export type FilePaymentCreateOrConnectWithoutHistoryInput = {
+    where: FilePaymentWhereUniqueInput
+    create: XOR<FilePaymentCreateWithoutHistoryInput, FilePaymentUncheckedCreateWithoutHistoryInput>
+  }
+
+  export type FilePaymentCreateManyHistoryInputEnvelope = {
+    data: Enumerable<FilePaymentCreateManyHistoryInput>
+    skipDuplicates?: boolean
+  }
+
   export type InstructorUpsertWithoutInstructorHistoryInput = {
     update: XOR<InstructorUpdateWithoutInstructorHistoryInput, InstructorUncheckedUpdateWithoutInstructorHistoryInput>
     create: XOR<InstructorCreateWithoutInstructorHistoryInput, InstructorUncheckedCreateWithoutInstructorHistoryInput>
@@ -9963,6 +11396,106 @@ export namespace Prisma {
     price?: FloatFieldUpdateOperationsInput | number
     File?: FileUncheckedUpdateManyWithoutInstructorInput
     User?: UserUncheckedUpdateManyWithoutInstructorInput
+  }
+
+  export type FilePaymentUpsertWithWhereUniqueWithoutHistoryInput = {
+    where: FilePaymentWhereUniqueInput
+    update: XOR<FilePaymentUpdateWithoutHistoryInput, FilePaymentUncheckedUpdateWithoutHistoryInput>
+    create: XOR<FilePaymentCreateWithoutHistoryInput, FilePaymentUncheckedCreateWithoutHistoryInput>
+  }
+
+  export type FilePaymentUpdateWithWhereUniqueWithoutHistoryInput = {
+    where: FilePaymentWhereUniqueInput
+    data: XOR<FilePaymentUpdateWithoutHistoryInput, FilePaymentUncheckedUpdateWithoutHistoryInput>
+  }
+
+  export type FilePaymentUpdateManyWithWhereWithoutHistoryInput = {
+    where: FilePaymentScalarWhereInput
+    data: XOR<FilePaymentUpdateManyMutationInput, FilePaymentUncheckedUpdateManyWithoutFilePaymentInput>
+  }
+
+  export type FileCreateWithoutFilePaymentInput = {
+    name: string
+    instructor: InstructorCreateNestedOneWithoutFileInput
+    date: Date | string
+    fallaf_price: number
+    dev_price: number
+    paid?: number
+  }
+
+  export type FileUncheckedCreateWithoutFilePaymentInput = {
+    id?: number
+    name: string
+    date: Date | string
+    fallaf_price: number
+    dev_price: number
+    paid?: number
+    instructorId: number
+  }
+
+  export type FileCreateOrConnectWithoutFilePaymentInput = {
+    where: FileWhereUniqueInput
+    create: XOR<FileCreateWithoutFilePaymentInput, FileUncheckedCreateWithoutFilePaymentInput>
+  }
+
+  export type InstructorHistoryCreateWithoutFilePaymentInput = {
+    instructor: InstructorCreateNestedOneWithoutInstructorHistoryInput
+    date: Date | string
+    sum: number
+  }
+
+  export type InstructorHistoryUncheckedCreateWithoutFilePaymentInput = {
+    id?: number
+    date: Date | string
+    sum: number
+    instructorId: number
+  }
+
+  export type InstructorHistoryCreateOrConnectWithoutFilePaymentInput = {
+    where: InstructorHistoryWhereUniqueInput
+    create: XOR<InstructorHistoryCreateWithoutFilePaymentInput, InstructorHistoryUncheckedCreateWithoutFilePaymentInput>
+  }
+
+  export type FileUpsertWithoutFilePaymentInput = {
+    update: XOR<FileUpdateWithoutFilePaymentInput, FileUncheckedUpdateWithoutFilePaymentInput>
+    create: XOR<FileCreateWithoutFilePaymentInput, FileUncheckedCreateWithoutFilePaymentInput>
+  }
+
+  export type FileUpdateWithoutFilePaymentInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    instructor?: InstructorUpdateOneRequiredWithoutFileInput
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    fallaf_price?: FloatFieldUpdateOperationsInput | number
+    dev_price?: FloatFieldUpdateOperationsInput | number
+    paid?: FloatFieldUpdateOperationsInput | number
+  }
+
+  export type FileUncheckedUpdateWithoutFilePaymentInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    fallaf_price?: FloatFieldUpdateOperationsInput | number
+    dev_price?: FloatFieldUpdateOperationsInput | number
+    paid?: FloatFieldUpdateOperationsInput | number
+    instructorId?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type InstructorHistoryUpsertWithoutFilePaymentInput = {
+    update: XOR<InstructorHistoryUpdateWithoutFilePaymentInput, InstructorHistoryUncheckedUpdateWithoutFilePaymentInput>
+    create: XOR<InstructorHistoryCreateWithoutFilePaymentInput, InstructorHistoryUncheckedCreateWithoutFilePaymentInput>
+  }
+
+  export type InstructorHistoryUpdateWithoutFilePaymentInput = {
+    instructor?: InstructorUpdateOneRequiredWithoutInstructorHistoryInput
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    sum?: FloatFieldUpdateOperationsInput | number
+  }
+
+  export type InstructorHistoryUncheckedUpdateWithoutFilePaymentInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    sum?: FloatFieldUpdateOperationsInput | number
+    instructorId?: IntFieldUpdateOperationsInput | number
   }
 
   export type InstructorCreateWithoutUserInput = {
@@ -10085,6 +11618,7 @@ export namespace Prisma {
     date: Date | string
     fallaf_price: number
     dev_price: number
+    paid?: number
   }
 
   export type InstructorHistoryCreateManyInstructorInput = {
@@ -10106,6 +11640,8 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     fallaf_price?: FloatFieldUpdateOperationsInput | number
     dev_price?: FloatFieldUpdateOperationsInput | number
+    paid?: FloatFieldUpdateOperationsInput | number
+    FilePayment?: FilePaymentUpdateManyWithoutFileInput
   }
 
   export type FileUncheckedUpdateWithoutInstructorInput = {
@@ -10114,6 +11650,8 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     fallaf_price?: FloatFieldUpdateOperationsInput | number
     dev_price?: FloatFieldUpdateOperationsInput | number
+    paid?: FloatFieldUpdateOperationsInput | number
+    FilePayment?: FilePaymentUncheckedUpdateManyWithoutFileInput
   }
 
   export type FileUncheckedUpdateManyWithoutFileInput = {
@@ -10122,17 +11660,20 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     fallaf_price?: FloatFieldUpdateOperationsInput | number
     dev_price?: FloatFieldUpdateOperationsInput | number
+    paid?: FloatFieldUpdateOperationsInput | number
   }
 
   export type InstructorHistoryUpdateWithoutInstructorInput = {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     sum?: FloatFieldUpdateOperationsInput | number
+    FilePayment?: FilePaymentUpdateManyWithoutHistoryInput
   }
 
   export type InstructorHistoryUncheckedUpdateWithoutInstructorInput = {
     id?: IntFieldUpdateOperationsInput | number
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     sum?: FloatFieldUpdateOperationsInput | number
+    FilePayment?: FilePaymentUncheckedUpdateManyWithoutHistoryInput
   }
 
   export type InstructorHistoryUncheckedUpdateManyWithoutInstructorHistoryInput = {
@@ -10164,6 +11705,46 @@ export namespace Prisma {
     login?: StringFieldUpdateOperationsInput | string
     password?: StringFieldUpdateOperationsInput | string
     status?: EnumUserStatusFieldUpdateOperationsInput | UserStatus
+  }
+
+  export type FilePaymentCreateManyFileInput = {
+    id?: number
+    sum: number
+    historyId: number
+  }
+
+  export type FilePaymentUpdateWithoutFileInput = {
+    sum?: FloatFieldUpdateOperationsInput | number
+    history?: InstructorHistoryUpdateOneRequiredWithoutFilePaymentInput
+  }
+
+  export type FilePaymentUncheckedUpdateWithoutFileInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    sum?: FloatFieldUpdateOperationsInput | number
+    historyId?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type FilePaymentUncheckedUpdateManyWithoutFilePaymentInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    sum?: FloatFieldUpdateOperationsInput | number
+    historyId?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type FilePaymentCreateManyHistoryInput = {
+    id?: number
+    sum: number
+    fileId: number
+  }
+
+  export type FilePaymentUpdateWithoutHistoryInput = {
+    sum?: FloatFieldUpdateOperationsInput | number
+    file?: FileUpdateOneRequiredWithoutFilePaymentInput
+  }
+
+  export type FilePaymentUncheckedUpdateWithoutHistoryInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    sum?: FloatFieldUpdateOperationsInput | number
+    fileId?: IntFieldUpdateOperationsInput | number
   }
 
 

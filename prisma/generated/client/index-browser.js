@@ -88,6 +88,7 @@ exports.Prisma.FileScalarFieldEnum = makeEnum({
   date: 'date',
   fallaf_price: 'fallaf_price',
   dev_price: 'dev_price',
+  paid: 'paid',
   instructorId: 'instructorId'
 });
 
@@ -96,6 +97,13 @@ exports.Prisma.InstructorHistoryScalarFieldEnum = makeEnum({
   date: 'date',
   sum: 'sum',
   instructorId: 'instructorId'
+});
+
+exports.Prisma.FilePaymentScalarFieldEnum = makeEnum({
+  id: 'id',
+  sum: 'sum',
+  fileId: 'fileId',
+  historyId: 'historyId'
 });
 
 exports.Prisma.DevHistoryScalarFieldEnum = makeEnum({
@@ -152,6 +160,7 @@ exports.Prisma.ModelName = makeEnum({
   Instructor: 'Instructor',
   File: 'File',
   InstructorHistory: 'InstructorHistory',
+  FilePayment: 'FilePayment',
   DevHistory: 'DevHistory',
   Dev: 'Dev',
   User: 'User',

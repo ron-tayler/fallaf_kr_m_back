@@ -15,7 +15,8 @@
     "prisma:gen": "prisma generate",
     "prisma:format": "prisma format",
     "prisma:migrate": "prisma migrate deploy",
-    "prisma:seed": "prisma db seed"
+    "prisma:seed": "prisma db seed",
+    "backfill:file_paid": "ts-node src/scripts/backfill_file_paid.ts"
   },
   "keywords": [],
   "author": "",

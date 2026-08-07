@@ -26,7 +26,10 @@ model File {
   date         DateTime
   fallaf_price Float
   dev_price    Float
+  paid         Float      @default(0)
   instructorId Int
+
+  FilePayment FilePayment[]
 }
 
 model InstructorHistory {
@@ -35,6 +38,18 @@ model InstructorHistory {
   date         DateTime
   sum          Float
   instructorId Int
+
+  FilePayment FilePayment[]
+}
+
+model FilePayment {
+  id  Int   @id @default(autoincrement())
+  sum Float
+
+  file      File              @relation(fields: [fileId], references: [id], onDelete: Cascade)
+  fileId    Int
+  history   InstructorHistory @relation(fields: [historyId], references: [id], onDelete: Cascade)
+  historyId Int
 }
 
 model DevHistory {

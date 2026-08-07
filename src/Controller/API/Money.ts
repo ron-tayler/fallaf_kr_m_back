@@ -14,6 +14,10 @@ import {Request, Response} from "express";
 import * as io_ts from "io-ts";
 import * as io_ts_types from "io-ts-types";
 
+function round2(value: number){
+    return Math.round(value * 100) / 100
+}
+
 @controller("/api/money")
 export class Controller_API_Money extends BaseHttpController {
 
@@ -52,7 +56,7 @@ export class Controller_API_Money extends BaseHttpController {
     }
 
     @httpPut("/instructor/:id/addMoney")
-    addMoneyByInstructor(@requestParam("id") id: number, @request() req: Request, @response() res: Response){
+    async addMoneyByInstructor(@requestParam("id") id: number, @request() req: Request, @response() res: Response){
         id = Number(id)
         const money_raw = parseFloat(req.body.money)
         if(isNaN(money_raw) || money_raw <=0){
@@ -63,23 +67,108 @@ export class Controller_API_Money extends BaseHttpController {
             res.status(400).end("error id")
             return;
         }
+        const money = round2(money_raw)
 
-        const p1 = this.prisma.instructor.update({
-            where:{id},
-            data:{price:{
-                decrement: money_raw
-            }}
+        const files_io = io_ts.union([
+            io_ts.undefined,
+            io_ts.null,
+            io_ts.array(io_ts.type({
+                id: io_ts.number,
+                sum: io_ts.number
+            }))
+        ]).decode(req.body.files)
+        if(files_io._tag=="Left"){
+            res.status(400).end("error files")
+            return;
+        }
+
+        const instructor = await this.prisma.instructor.findUnique({
+            where:{id}
         })
-        const p2 = this.prisma.instructorHistory.create({
-            data: {
-                sum: money_raw,
-                date: new Date(),
-                instructor: {
-                    connect: {id}
+        if(!instructor){
+            res.status(400).end("not found instructor")
+            return;
+        }
+
+        // от самого старого файла к самому новому - в таком порядке оплата разносится по умолчанию
+        const files = await this.prisma.file.findMany({
+            where:{instructorId: id},
+            orderBy:[{date: "asc"},{id: "asc"}]
+        })
+
+        const allocations: {id: number, sum: number}[] = []
+
+        if(files_io.right && files_io.right.length > 0){
+            // ручное распределение: менеджер сам указал, за какие файлы пришли деньги
+            const by_file = new Map<number, number>()
+            files_io.right.forEach(alloc=>{
+                by_file.set(alloc.id, round2((by_file.get(alloc.id) ?? 0) + alloc.sum))
+            })
+
+            for(const [file_id, sum] of by_file){
+                const file = files.find(f=>f.id==file_id)
+                if(!file){
+                    res.status(400).end("error file "+file_id)
+                    return;
                 }
+                const rest = round2(file.fallaf_price - file.paid)
+                if(sum <= 0 || sum > rest){
+                    res.status(400).end("error sum for file "+file_id)
+                    return;
+                }
+                allocations.push({id: file_id, sum})
             }
-        })
-        return Promise.all([p1,p2])
+        } else {
+            // автоматическое распределение: гасим самые старые неоплаченные файлы
+            let rest_money = money
+            for(const file of files){
+                if(rest_money <= 0) break
+                const rest = round2(file.fallaf_price - file.paid)
+                if(rest <= 0) continue
+                const sum = Math.min(rest, rest_money)
+                allocations.push({id: file.id, sum: round2(sum)})
+                rest_money = round2(rest_money - sum)
+            }
+        }
+
+        const allocated = round2(allocations.reduce((sum,alloc)=>sum + alloc.sum, 0))
+        if(allocated > money){
+            res.status(400).end("allocations more than money")
+            return;
+        }
+
+        const queries: any[] = [
+            this.prisma.instructor.update({
+                where:{id},
+                data:{price:{
+                    decrement: money
+                }}
+            }),
+            this.prisma.instructorHistory.create({
+                data: {
+                    sum: money,
+                    date: new Date(),
+                    instructor: {
+                        connect: {id}
+                    },
+                    FilePayment: {
+                        create: allocations.map(alloc=>({
+                            sum: alloc.sum,
+                            file: {connect: {id: alloc.id}}
+                        }))
+                    }
+                }
+            }),
+            ...allocations.map(alloc=>this.prisma.file.update({
+                where:{id: alloc.id},
+                data:{paid:{
+                    increment: alloc.sum
+                }}
+            }))
+        ]
+
+        return this.prisma.$transaction(queries)
+            .then(()=>this.ok(), ()=>this.internalServerError())
     }
 
     @httpGet("/files")
@@ -97,17 +186,8 @@ export class Controller_API_Money extends BaseHttpController {
         let files: any[] = []
 
         instructors.forEach(inst=>{
-            let inst_balance = inst.price
             const inst_files = inst.File.sort((a,b)=>b.id-a.id)
                 .map(file=>{
-                    let c = inst_balance - file.fallaf_price
-                    let file_balance = 0
-                    if(inst_balance < 0){
-                        file_balance = file.fallaf_price
-                    } else if(c < 0){
-                        file_balance = c * -1
-                    }
-                    inst_balance = c
                     return {
                         id: file.id,
                         name: file.name,
@@ -115,7 +195,7 @@ export class Controller_API_Money extends BaseHttpController {
                         fallaf_price: file.fallaf_price,
                         dev_price: file.dev_price,
                         date: file.date,
-                        balance: file_balance
+                        balance: round2(file.paid)
                     }
                 })
             files.push(...inst_files)
@@ -232,6 +312,81 @@ export class Controller_API_Money extends BaseHttpController {
             })
     }
 
+    @httpPost("/file/:id/edit")
+    async editFile(
+        @requestParam("id") id: number,
+        @requestBody() body: any,
+        @response() res: Response
+    ){
+        body.date = new Date(body.date ?? "");
+        const body_io = io_ts.type({
+            name: io_ts.string,
+            instructor_id: io_ts.number,
+            date: io_ts_types.date
+        }).decode(body)
+        if(body_io._tag=="Left"){
+            res.status(400).end(body_io.left[0].message)
+            return;
+        }
+        const file_data = body_io.right
+
+        const file = await this.prisma.file.findUnique({
+            where:{id: Number(id)}
+        })
+        if(!file){
+            res.status(400).end("not found file")
+            return
+        }
+
+        const instructor = await this.prisma.instructor.findUnique({
+            where:{id: file_data.instructor_id}
+        })
+        if(!instructor){
+            res.status(400).end("not found instructor")
+            return
+        }
+
+        const queries: any[] = [
+            this.prisma.file.update({
+                where:{id: file.id},
+                data:{
+                    name: file_data.name,
+                    date: file_data.date,
+                    instructor:{
+                        connect:{id: file_data.instructor_id}
+                    }
+                }
+            })
+        ]
+
+        if(file.instructorId != file_data.instructor_id){
+            queries.push(this.prisma.instructor.update({
+                where:{id: file.instructorId},
+                data:{price:{
+                    decrement: file.fallaf_price
+                }}
+            }))
+            queries.push(this.prisma.instructor.update({
+                where:{id: file_data.instructor_id},
+                data:{price:{
+                    increment: file.fallaf_price
+                }}
+            }))
+            // деньги платил старый инструктор, поэтому оплата с файлом не переезжает:
+            // у старого она превращается в переплату (уменьшает его долг), новый файл не оплачивал
+            queries.push(this.prisma.filePayment.deleteMany({
+                where:{fileId: file.id}
+            }))
+            queries.push(this.prisma.file.update({
+                where:{id: file.id},
+                data:{paid: 0}
+            }))
+        }
+
+        return this.prisma.$transaction(queries)
+            .then(()=>this.ok(), ()=>this.internalServerError())
+    }
+
     @httpPost("/file/:id/edit_fallaf_price")
     editFileFallafPrice(
         @requestParam("id") id: number,
@@ -256,7 +411,11 @@ export class Controller_API_Money extends BaseHttpController {
                     }),
                     this.prisma.file.update({
                         where:{id:  file.id},
-                        data:{fallaf_price}
+                        data:{
+                            fallaf_price,
+                            // если цену опустили ниже уже оплаченной суммы - обрезаем оплату по новой цене
+                            paid: file.paid > fallaf_price ? fallaf_price : file.paid
+                        }
                     })
                 ])
             })
@@ -294,13 +453,26 @@ export class Controller_API_Money extends BaseHttpController {
 
     @httpGet("/instructors/history")
     getInstructorsMoneyHistory(){
-        return this.prisma.instructorHistory.findMany().then(arr=>{
+        return this.prisma.instructorHistory.findMany({
+            include:{
+                FilePayment:{
+                    include:{
+                        file:{select:{id: true, name: true}}
+                    }
+                }
+            }
+        }).then(arr=>{
             return arr.map(el=>{
                 return {
                     id: el.id,
                     date: el.date,
                     sum: el.sum,
-                    inst_id: el.instructorId
+                    inst_id: el.instructorId,
+                    files: el.FilePayment.map(payment=>({
+                        id: payment.fileId,
+                        name: payment.file.name,
+                        sum: payment.sum
+                    }))
                 }
             })
         })
