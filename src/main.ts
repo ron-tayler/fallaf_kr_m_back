@@ -41,7 +41,7 @@ server.setConfig(app=>{
         store: container.get<PrismaSessionStore>("SessionStore")
     }))
     app.use(bodyParser.urlencoded({extended: true}));
-    app.use(bodyParser.json());
+    app.use(bodyParser.json({limit: "16mb"}));   // .dbd в base64 (~1.1 МБ) для редактора ленты
     app.use(express.static(path.join(__dirname, '../front')))
 })
 

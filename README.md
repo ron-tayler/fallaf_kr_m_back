@@ -173,7 +173,9 @@ docker run -p 3000:3000 fallaf-kr-m-back
 - Валидация входных данных через io-ts
 - Ролевая модель доступа (Admin, Manager, Instructor, User)
 
-⚠️ **Важно**: Большинство финансовых endpoints не требуют авторизации. Рекомендуется добавить авторизацию на все финансовые операции.
+Все endpoints `/api/money` закрыты middleware `IsSignIn`. Изменяющие операции доступны только ролям `Admin` и `Manager`, роль `Instructor` имеет доступ только на чтение своих данных, роль `User` - не имеет доступа. Подробности в разделе «Безопасность» [API документации](./docs/api/API_DOCUMENTATION.md).
+
+⚠️ **Важно**: FreeKassa webhook `/public-api/free-kassa/notify` не проверяет подпись `SIGN`.
 
 ## Документация
 
@@ -204,8 +206,7 @@ docker run -p 3000:3000 fallaf-kr-m-back
 
 ## Известные проблемы
 
-- Некоторые финансовые endpoints не требуют авторизации
-- FreeKassa webhook не обрабатывает платежи (только логирование)
+- FreeKassa webhook не обрабатывает платежи (только логирование) и не проверяет подпись `SIGN`
 - Hardcoded значения в FreeKassa контроллере (order_id, inst_id, amount)
 - Отсутствие слоя Service (бизнес-логика в контроллерах)
 - Отсутствие слоя Repository (прямой доступ к Prisma)

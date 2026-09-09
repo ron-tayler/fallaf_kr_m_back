@@ -24,13 +24,40 @@ export class Controller_API_Money extends BaseHttpController {
     @inject<PrismaClient>("Prisma")
     private prisma!: PrismaClient
 
-    @httpGet("/instructors")
-    getInstructors(){
-        return this.prisma.instructor.findMany()
+    private isManager(req: Request){
+        return ["Admin","Manager"].includes(req.session?.user_role ?? "")
     }
 
-    @httpPut("/instructor")
+    private isInstructor(req: Request){
+        return req.session?.user_role == "Instructor"
+    }
+
+    // id инструктора, привязанного к текущему пользователю (0 - не привязан)
+    private getSessionInstructorId(req: Request){
+        return this.prisma.user.findUnique({
+            where:{id: req.session?.user_id ?? 0},
+            select:{instructor: true}
+        }).then(user=>user?.instructor?.id ?? 0)
+    }
+
+    @httpGet("/instructors","IsSignIn")
+    async getInstructors(@request() req: Request){
+        if(this.isManager(req)){
+            return this.prisma.instructor.findMany()
+        }
+        if(this.isInstructor(req)){
+            // инструктор видит только сам себя, чужие долги ему не отдаём
+            const inst_id = await this.getSessionInstructorId(req)
+            return this.prisma.instructor.findMany({
+                where:{id: inst_id}
+            })
+        }
+        return this.json("Forbidden",403)
+    }
+
+    @httpPut("/instructor","IsSignIn")
     addInstructor(@request() req: Request, @response() res: Response){
+        if(!this.isManager(req)) return this.json("Forbidden",403)
         const name_raw = io_ts.string.decode(req.body.name)
         if(name_raw._tag!="Right"){
             res.status(400).end("error name")
@@ -43,8 +70,9 @@ export class Controller_API_Money extends BaseHttpController {
         })
     }
 
-    @httpDelete("/instructor/:id")
-    removeInstructor(@requestParam("id") id: number){
+    @httpDelete("/instructor/:id","IsSignIn")
+    removeInstructor(@requestParam("id") id: number, @request() req: Request){
+        if(!this.isManager(req)) return this.json("Forbidden",403)
         id = Number(id)
         return this.prisma.instructor.delete({
             where: {id}
@@ -55,8 +83,9 @@ export class Controller_API_Money extends BaseHttpController {
         })
     }
 
-    @httpPut("/instructor/:id/addMoney")
+    @httpPut("/instructor/:id/addMoney","IsSignIn")
     async addMoneyByInstructor(@requestParam("id") id: number, @request() req: Request, @response() res: Response){
+        if(!this.isManager(req)) return this.json("Forbidden",403)
         id = Number(id)
         const money_raw = parseFloat(req.body.money)
         if(isNaN(money_raw) || money_raw <=0){
@@ -171,8 +200,10 @@ export class Controller_API_Money extends BaseHttpController {
             .then(()=>this.ok(), ()=>this.internalServerError())
     }
 
-    @httpGet("/files")
+    @httpGet("/files","IsSignIn")
     async getFiles(@request() req: Request){
+        if(!this.isManager(req) && !this.isInstructor(req))
+            return this.json("Forbidden",403)
 
         const instructors = await this.prisma.instructor.findMany({
             select:{
@@ -201,25 +232,20 @@ export class Controller_API_Money extends BaseHttpController {
             files.push(...inst_files)
         })
 
-        if(req.session.user_role=="Instructor"){
-            const user = await this.prisma.user.findUnique({
-                where:{id: req.session.user_id ?? 0},
-                select:{
-                    instructor: true
-                }
-            })
-
-            if(user){
-                const inst_id = user.instructor?.id ?? 0
-                files = files.filter(file=>file.instructor_id==inst_id)
-            }
+        if(this.isInstructor(req)){
+            const inst_id = await this.getSessionInstructorId(req)
+            files = files
+                .filter(file=>file.instructor_id==inst_id)
+                // сумма программиста инструктора не касается
+                .map(({dev_price, ...file})=>file)
         }
 
         return files
     }
 
-    @httpPut("/file")
-    async addFile(@requestBody() body: any, @response() res: Response){
+    @httpPut("/file","IsSignIn")
+    async addFile(@requestBody() body: any, @request() req: Request, @response() res: Response){
+        if(!this.isManager(req)) return this.json("Forbidden",403)
         body.date = new Date(body.date ?? "");
         const body_io = io_ts.type({
             name: io_ts.string,
@@ -276,8 +302,9 @@ export class Controller_API_Money extends BaseHttpController {
         return this.prisma.$transaction([p1,p2,p3])
     }
 
-    @httpDelete("/file/:id")
-    removeFile(@requestParam("id") id: number){
+    @httpDelete("/file/:id","IsSignIn")
+    removeFile(@requestParam("id") id: number, @request() req: Request){
+        if(!this.isManager(req)) return this.json("Forbidden",403)
         return this.prisma.file.findUnique({
             where:{id: Number(id)}
         }).then(file=>file?file:Promise.reject("not_found"))
@@ -312,12 +339,14 @@ export class Controller_API_Money extends BaseHttpController {
             })
     }
 
-    @httpPost("/file/:id/edit")
+    @httpPost("/file/:id/edit","IsSignIn")
     async editFile(
         @requestParam("id") id: number,
         @requestBody() body: any,
+        @request() req: Request,
         @response() res: Response
     ){
+        if(!this.isManager(req)) return this.json("Forbidden",403)
         body.date = new Date(body.date ?? "");
         const body_io = io_ts.type({
             name: io_ts.string,
@@ -387,12 +416,13 @@ export class Controller_API_Money extends BaseHttpController {
             .then(()=>this.ok(), ()=>this.internalServerError())
     }
 
-    @httpPost("/file/:id/edit_fallaf_price")
+    @httpPost("/file/:id/edit_fallaf_price","IsSignIn")
     editFileFallafPrice(
         @requestParam("id") id: number,
         @request() req: Request,
         @response() res: Response
     ){
+        if(!this.isManager(req)) return this.json("Forbidden",403)
         const price_raw = io_ts.number.decode(Number(req.body.price))
         if(price_raw._tag == "Left"){
             return res.status(400).end("error price")
@@ -421,12 +451,13 @@ export class Controller_API_Money extends BaseHttpController {
             })
     }
 
-    @httpPost("/file/:id/edit_dev_price")
+    @httpPost("/file/:id/edit_dev_price","IsSignIn")
     editFileDevPrice(
         @requestParam("id") id: number,
         @request() req: Request,
         @response() res: Response
     ){
+        if(!this.isManager(req)) return this.json("Forbidden",403)
         const price_raw = io_ts.number.decode(Number(req.body.price))
         if(price_raw._tag == "Left"){
             return res.status(400).end("error price")
@@ -451,8 +482,9 @@ export class Controller_API_Money extends BaseHttpController {
             })
     }
 
-    @httpGet("/instructors/history")
-    getInstructorsMoneyHistory(){
+    @httpGet("/instructors/history","IsSignIn")
+    getInstructorsMoneyHistory(@request() req: Request){
+        if(!this.isManager(req)) return this.json("Forbidden",403)
         return this.prisma.instructorHistory.findMany({
             include:{
                 FilePayment:{
@@ -478,8 +510,9 @@ export class Controller_API_Money extends BaseHttpController {
         })
     }
 
-    @httpPut("/dev/money")
-    addDevMoney(@requestBody() body: any, @response() res: Response){
+    @httpPut("/dev/money","IsSignIn")
+    addDevMoney(@requestBody() body: any, @request() req: Request, @response() res: Response){
+        if(!this.isManager(req)) return this.json("Forbidden",403)
         const body_io = io_ts.type({
             money: io_ts.number
         }).decode(body)
@@ -505,8 +538,9 @@ export class Controller_API_Money extends BaseHttpController {
         return Promise.all([p1,p2]).then(()=>this.ok())
     }
 
-    @httpGet("/dev/history")
-    getDevMoneyHistory(){
+    @httpGet("/dev/history","IsSignIn")
+    getDevMoneyHistory(@request() req: Request){
+        if(!this.isManager(req)) return this.json("Forbidden",403)
         const p1 = this.prisma.devHistory.findMany()
         const p2 = this.prisma.dev.findUnique({
             where:{id:1},

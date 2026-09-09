@@ -303,19 +303,15 @@ MySQL Session Table
 
 ### 6.4 Проблемы безопасности
 
-⚠️ **КРИТИЧЕСКИЕ**:
-1. **Финансовые endpoints без авторизации**:
-   - `/api/money/instructors` - GET (публичный)
-   - `/api/money/instructor` - PUT (создание без авторизации)
-   - `/api/money/instructor/:id/addMoney` - PUT (пополнение без авторизации)
-   - `/api/money/files` - GET (публичный, но фильтруется по роли)
+✅ **ЗАКРЫТО**: Финансовые endpoints `/api/money/*` закрыты middleware `IsSignIn`; изменяющие операции требуют роль `Admin`/`Manager`, роль `Instructor` получает только свои данные на чтение, роль `User` - `403`.
 
-2. **FreeKassa webhook не обрабатывает платежи**:
+⚠️ **КРИТИЧЕСКИЕ**:
+1. **FreeKassa webhook не обрабатывает платежи**:
    - Только логирование данных
    - Нет проверки подписи
    - Нет обновления балансов
 
-3. **Hardcoded значения**:
+2. **Hardcoded значения**:
    - В `Controller_API_FreeKassa.getPayUrl()` захардкожены order_id, inst_id, amount
 
 ---

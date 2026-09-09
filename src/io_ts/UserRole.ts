@@ -11,7 +11,7 @@ const userRoles:{
 }
 
 function isUserRole<A extends UserRole>(u: unknown): u is A{
-    return typeof u == "string" && !!Object.keys(userRoles).findIndex(v=>v==u)
+    return typeof u == "string" && Object.keys(userRoles).includes(u)
 }
 
 function validateUserRole(i :unknown, ctx: io_ts.Context): io_ts.Validation<UserRole>{

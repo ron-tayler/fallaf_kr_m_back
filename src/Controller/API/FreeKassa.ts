@@ -16,7 +16,7 @@ export class Controller_API_FreeKassa extends BaseHttpController {
     @inject<FreeKassa>("FreeKassa")
     private free_kassa!: FreeKassa
 
-    @httpGet("/get-pay-url")
+    @httpGet("/get-pay-url","IsSignIn")
     getPayUrl(){
 
         // Создаём Ордер
